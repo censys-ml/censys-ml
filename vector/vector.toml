@@ -1,0 +1,21 @@
+data_dir = "data/"
+
+# TODO : add backups for sink
+# [sinks.backups]
+#     # type = "s3"
+#     [sinks.backups.buffer]
+#         type = "disk"
+#         max_size = 1000000000 # 1gb
+
+[sources.in]
+    type = "${INPUT}"
+
+# Structure and parse the data
+[transforms.apache_parser]
+    inputs = ["in"]
+    type   = "regex_parser"
+    regex  = '^(?P<hosts>[\w\.]+) - (?P<users>[\w]+) (?P<bytes_ins>[\d]+) \[(?P<timestamps>.*)\] "(?P<methods>[\w]+) (?P<paths>.*)" (?P<statuss>[\d]+) (?P<bytes_outs>[\d]+)$'
+
+[sinks.out]
+    inputs = ["apache_parser"]
+    type = "${OUTPUT}"
