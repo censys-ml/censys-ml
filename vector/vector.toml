@@ -1,21 +1,47 @@
-data_dir = "data/"
-
-# TODO : add backups for sink
-# [sinks.backups]
-#     # type = "s3"
-#     [sinks.backups.buffer]
-#         type = "disk"
-#         max_size = 1000000000 # 1gb
+data_dir = "/Users/dagmawi/Desktop/censys-ml/vector/data"
 
 [sources.in]
     type = "${INPUT}"
 
-# Structure and parse the data
-[transforms.apache_parser]
+[transforms.numeric]
+    search_dirs = ["./scripts/lua"]
     inputs = ["in"]
-    type   = "regex_parser"
-    regex  = '^(?P<hosts>[\w\.]+) - (?P<users>[\w]+) (?P<bytes_ins>[\d]+) \[(?P<timestamps>.*)\] "(?P<methods>[\w]+) (?P<paths>.*)" (?P<statuss>[\d]+) (?P<bytes_outs>[\d]+)$'
+    type = "lua"
+    source = """
+require("numeric_field")
+handle_numeric(event)
+    """
+
+# [transforms.numeric]
+#     type = "lua"
+#     search_dirs = ["./scripts/lua"]
+#     inputs = ["in"]
+#     source = """
+# require("numeric_field")
+# require("string_field")
+# require("time_field")
+
+# print("Running...")
+
+# add_numeric(event)
+#     """
+
+# [transforms.numeric]
+#     type = "lua"
+#     search_dirs = ["./scripts/lua"]
+#     inputs = ["in"]
+#     source = """
+# require("numeric_field")
+# require("string_field")
+# require("time_field")
+
+# print("Running...")
+
+# add_numeric(event)
+#     """
 
 [sinks.out]
-    inputs = ["apache_parser"]
+    inputs = ["numeric"]
     type = "${OUTPUT}"
+    encoding = "ndjson"
+    path = "/Users/dagmawi/Desktop/censys-ml/vector/data/vector-%Y-%m-%d.json"

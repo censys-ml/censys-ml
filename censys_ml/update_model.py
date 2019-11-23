@@ -56,8 +56,6 @@ global_config = utils.get_config()
 #     return list({f.split('.')[0] for f in fields})
 
 
-
-
 # def get_dry_run(field, table):
 #     query = ("SELECT {} FROM `{}.{}.{}` WHERE ip='8.8.8.8';"
 #              .format(field, project, dataset_id, table))
@@ -81,7 +79,7 @@ global_config = utils.get_config()
 
 #     for t, table in enumerate(tables):
 #         print "\n[X] Table {}".format(table)
-#         
+#
 #         columns = only_parents()
 #         for i, field in enumerate(only_parents(fields)):
 #             print "[X] Field {}.{} ) {}".format(t, i, field)
@@ -92,7 +90,7 @@ global_config = utils.get_config()
 
 #     avg_costs = {k: max(costs[k]) for k in costs}
 #     data_to_json('../../raw/aggregated_costs.json', avg_costs)
-    # print("{} query will process {} bytes.".format(f, avg_proc))
+# print("{} query will process {} bytes.".format(f, avg_proc))
 
 
 def parse_schema(fields):
@@ -138,7 +136,6 @@ def get_model_definition(client, dataset_ref):
                            prefix='Table : ', suffix='Complete',
                            length=50)
     for i, table in enumerate(client.list_tables(dataset_ref)):
-        # print("[x] Working on table : {}".format(table.table_id))
         utils.printProgressBar(iteration=i, total=total,
                                prefix='Table : {}'.format(table.table_id),
                                suffix='Complete', length=50)
