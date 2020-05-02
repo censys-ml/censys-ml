@@ -1,7 +1,11 @@
 #!/usr/bin/env bash
-
-export INPUT="stdin"
+export INPUT="file"
 export OUTPUT="file"
+
+VECTOR_DIR="/Users/dagmawi/Desktop/censys-ml/vector"
+export DATA_DIR=$VECTOR_DIR"/data"
+export IN_FILE=$VECTOR_DIR"/input/*.json"
+export OUT_FILE=$VECTOR_DIR"/output/vector-%Y-%m-%d.json"
 
 # debug
 vector --config vector/vector.toml --verbose --threads 4

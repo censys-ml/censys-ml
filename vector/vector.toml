@@ -1,15 +1,26 @@
-data_dir = "/Users/dagmawi/Desktop/censys-ml/vector/data"
+data_dir = "${DATA_DIR}"
 
 [sources.in]
     type = "${INPUT}"
+    include = ["${IN_FILE}"]
 
-[transforms.numeric]
+[transforms.json]
+  inputs = ["in"]
+  type   = "json_parser"
+  field  = "message"
+
+[transforms.censys]
     search_dirs = ["./scripts/lua"]
-    inputs = ["in"]
+    inputs = ["json"]
     type = "lua"
     source = """
 require("numeric_field")
-handle_numeric(event)
+require("general_field")
+require("string_field")
+
+-- handle_numeric(event)
+-- handle_string(event)
+handle_general(event)
     """
 
 # [transforms.numeric]
@@ -41,7 +52,7 @@ handle_numeric(event)
 #     """
 
 [sinks.out]
-    inputs = ["numeric"]
+    inputs = ["censys"]
     type = "${OUTPUT}"
     encoding = "ndjson"
-    path = "/Users/dagmawi/Desktop/censys-ml/vector/data/vector-%Y-%m-%d.json"
+    path = "/Users/dagmawi/Desktop/censys-ml/vector/output/vector-%Y-%m-%d.json"
