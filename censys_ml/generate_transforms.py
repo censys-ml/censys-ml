@@ -20,12 +20,7 @@ string_types = [
 #                                function_name='handle_numeric', 
 #                                data_lines=midlines)
 
-# def general_case(out_field, field):
-#     lines = []
-#     lines.append('event["{}"] = event["{}"]'.format(out_field, field))
-#     if field[0] == 'p':
-#         lines.append('event["{}"] = event["{}"]'.format(out_field, field[1:]))
-#     return lines
+
 
 # def generate_numeric_lines(field, out_field):
 #     lines = []
@@ -37,7 +32,12 @@ string_types = [
 #                                function_name='handle_numeric', 
 #                                data_lines=midlines)
 
-
+def general_case(field, out_field):
+    lines = []
+    lines.append('event["{}"], event["{}"] = nil, event["{}"]'.format(field,out_field,field))
+    if field[0] == 'p':
+        lines.append('\n\t event["{}"], event["{}"] = nil, event["{}"]'.format(field[1:],out_field[1:],field[1:]))
+    return lines
 
 #Replaces any string field with an empty value
 def empty_check_lines(field):
@@ -49,9 +49,11 @@ def empty_check_lines(field):
 
 
 
-def generate_string_lines(field, out_field):
+def generate_string_lines(out_field):
     lines = []
     lines.extend(empty_check_lines(out_field))
+    if out_field[0] == 'p':
+        lines.extend(empty_check_lines(out_field[1:]))
     return lines
 
 
@@ -82,12 +84,10 @@ def generate_generic_script(schema):
                                data_lines=lines)
 
 #Generates a script that swaps the branched representation of value with its equivalent flattened representation
-def generate_replacer_lines(field):
-    _field = field.replace('.', '__')
-    line = 'event["{}"], event["{}"] = nil, event["{}"]'.format(field,_field,field)
-    if field[0] == 'p':
-        line += '\n\t event["{}"], event["{}"] = nil, event["{}"]'.format(field[1:],_field[1:],field[1:])
-    return line
+def generate_replacer_lines(field,out_field):
+    lines = [] 
+    lines.extend(general_case(field,out_field))
+    return lines
 
 def generate_replacer_script(midlines):
     utils.write_script_to_file(file_name='replacer', 
@@ -103,8 +103,8 @@ def main():
         _type = schema[field]['type']
         out_field = field.replace('.', '__')
         if _type in string_types:
-            string_lines.extend(generate_string_lines(field, out_field))
-        replacer_lines.append(generate_replacer_lines(field))
+            string_lines.extend(generate_string_lines(out_field))
+        replacer_lines.extend(generate_replacer_lines(field, out_field))
         
     generate_string_script(string_lines)
     generate_replacer_script(replacer_lines)
