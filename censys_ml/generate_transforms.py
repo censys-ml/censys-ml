@@ -49,11 +49,11 @@ def empty_check_lines(field):
 
 
 
-def generate_string_lines(out_field):
+def generate_string_lines(field):
     lines = []
-    lines.extend(empty_check_lines(out_field))
-    if out_field[0] == 'p':
-        lines.extend(empty_check_lines(out_field[1:]))
+    lines.extend(empty_check_lines(field))
+    if field[0] == 'p':
+        lines.extend(empty_check_lines(field[1:]))
     return lines
 
 
@@ -103,7 +103,7 @@ def main():
         _type = schema[field]['type']
         out_field = field.replace('.', '__')
         if _type in string_types:
-            string_lines.extend(generate_string_lines(out_field))
+            string_lines.extend(generate_string_lines(field))
         replacer_lines.extend(generate_replacer_lines(field, out_field))
         
     generate_string_script(string_lines)
