@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
 
 # Install vector
-curl https://sh.vector.dev -sSf | sh
+curl --proto '=https' --tlsv1.2 -sSf https://sh.vector.dev | sh -s -- -y
