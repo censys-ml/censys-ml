@@ -34,6 +34,8 @@ string_types = [
 
 def general_case(field, out_field):
     lines = []
+    if out_field == field:
+        return lines
     lines.append('event["{}"], event["{}"] = nil, event["{}"]'.format(field,out_field,field))
     if field[0] == 'p':
         lines.append('\n\t event["{}"], event["{}"] = nil, event["{}"]'.format(field[1:],out_field[1:],field[1:]))
