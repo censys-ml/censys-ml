@@ -6,6 +6,11 @@ __pycache__/
 # C extensions
 *.so
 
+# Vector Directories
+vector/data
+vector/input
+vector/output
+
 # Distribution / packaging
 .Python
 build/
