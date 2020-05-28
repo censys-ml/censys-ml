@@ -1,6 +1,8 @@
 # Censys-ML
 
-Censys-ML is a Mapping tool that pulls data from [Censys](https://censys.com) and other similar sources to restructure and flatten the acquired dataset so that its easier to analyze.
+Censys-ML is a Mapping tool that transforms the data model seen in [Censys](https://censys.com) and other similar sources to a data model that is flattened so as to make its easier for data analysis.
+
+
 
 ![alt text](./img.png "Censys-ML Logo")
 
@@ -9,75 +11,84 @@ Censys-ML is a Mapping tool that pulls data from [Censys](https://censys.com) an
 ## Installation
 
 ###     Install Dependencies
-At some point, we will be pulling data of from Google's [bigquery](https://cloud.google.com/bigquery),  Specially when we are grabbing the main schema to update our model definition. Use the package manager [pip](https://pip.pypa.io/en/stable/) to install Google cloud tools
+
+All of the dependencies and requirements are listed in the ***pipfile***. Use the package manager [pipenv](https://pypi.org/project/pipenv/) to install all the dependencies. If pipenv is not installed on the system, Visit the official [site](https://pypi.org/project/pipenv/) and see how pipenv can be installed. 
+
+Run this line from a terminal opened from the root project directory to install the dependencies.
 
 ```bash
-pip install google.cloud
+pipenv install
 ```
 
 ###     Install Vector
 
 Vector is one on the key components of this project as it is used to transform or flatten the original dataset.
-To install vector, run the bash script ***setup.sh*** in the ***scripts*** folder. You can also install vector using curl
+To install vector, run the bash script ***setup.sh*** in the ***scripts*** folder. Vector can also be installed using curl
 
 ```bash
 curl --proto '=https' --tlsv1.2 -sSf https://sh.vector.dev | sh
 ```
 
-Vector can also be installed using other different methods. Take a look at [Vector installation Methods](https://vector.dev/docs/setup/installation/)
+Looking for other methods to install vector? Take a look at [Vector installation Methods](https://vector.dev/docs/setup/installation/)
 
 
 
 ## Usage
 
-###         	Generating the Lua Scripts
+###         	Generating the Lua Scripts   (Optional)
 
-Before getting into the transformation phase we must first generate the Lua scripts that vector depends on.
+Before getting into the transformation phase, the Lua scripts must first be generated. **THIS IS OPTIONAL** as the Lua scripts are already generated and frequently updated.
+
 These scripts are dynamically generated after looking at the schema set by these sources.
-So lets generate these scripts first. To do this, you can simply execute the ***generate_transforms*** module in the ***censys_ml*** directory or you can run these lines in your terminal (from the root directory of the project) and it should generate Lua scripts based on your currently set Model Definition.
+To do this, simply execute the ***generate_transforms*** module in the ***censys_ml*** directory or run these lines in a terminal (from the root directory of the project) and it should generate Lua scripts based on the currently set Model Definition.
 
  ```bash
 cd censys_ml
 python generate_transforms.py
  ```
 
- ###        Handling Your Datasets
+ ###        Handling Datasets
 
-For now, this tool only handles file inputs and output. This means that you need to get your files in the right directory before you can expect to carry on the transformation. All input dataset **MUST** be found in the ***input*** folder inside the main ***vector*** directory. The datasets also need to be represented by a **single-line** **JSON** file. Here is a sample Dataset. As far as the output dataset goes, you can find it in the ***output*** folder inside main *vector* directory.
+Currently, this tool only handles file inputs and output. This means that the input files must be in the right directory before you can expect to carry on the transformation. All input dataset **MUST** be found in the ***input*** folder inside the main ***vector*** directory. The datasets also need to be represented by a **single-line** **JSON** file. As far as the output dataset goes, you can find it in the ***output*** folder inside main *vector* directory.
 
-###         Transforming Your Dataset
+###         Transforming Datasets
 
-To carry on with the transformation phase just execute the ***main.sh*** script in the scripts folder
-or run this in a terminal from the root of the project folder
+To carry on with the transformation phase just execute the ***main.sh*** script in the scripts folder or run these lines in a terminal from the root of the project folder
 
  ```bash
 cd scripts
 sh main.sh
  ```
 
-You can gracefully shutdown the process once you're done.
+Gracefully shutdown the process once its done.
 
-You can then find your desired dataset in the ***output*** folder inside the vector directory. Your final dataset should be a flattened and unbranched JSON represented in a single line.
+The output dataset can be found in the ***output*** folder inside the vector directory, It will be named with an extension of the date the transformation was carried out. the final dataset should be a flattened JSON version of the original dataset represented in a single line.
 
 
 
-## Updating Your Model definition
+## Updating the Model definition   (Optional)
 
-The schema set by these sources is subject to change and these can in turn affect our final dataset if our
-transformation is not working in accordance to them. This means that we need to update our model definition from time to time. To Update your Model definition, you can simply execute the ***update_model*** Module in the ***censys_ml*** directory or run these lines from a terminal within the root project folder.
+**N.B.** Make sure that the correct **service file** is found in the ***auth*** folder inside the main ***config*** directory before proceeding.
+
+The schema set by these sources is subject to change and these can in turn affect the final dataset if the transformation is not working in accordance to them. This means that the model definition needs to be updated from time to time. **This is OPTIONAL** as the model definition is frequently updated. To Update the Model definition, open the pipenv shell. Simply run this line from the terminal (from the root project) to do so.
+
+```bash
+pipenv shell
+```
+
+Once the shell is running, navigate to the ***censys_ml*** directory and execute the ***update_model.py*** module. Run these lines in the terminal to do so
 
 ```bash
 cd censys_ml
 python update_model.py
 ```
 
-**N.B.** Make sure you have the correct **service file** in your ***auth*** folder inside the main ***config*** directory.
-
 
 
 ## Resources
 
 ```
+- https://pypi.org/project/pipenv/
 - https://censys.io/ipv4
 - https://vector.dev/
 - Lua programming language

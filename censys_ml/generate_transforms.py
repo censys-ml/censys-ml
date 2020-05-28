@@ -85,7 +85,7 @@ def generate_generic_script(schema):
                                function_name='handle_general', 
                                data_lines=lines)
 
-#Generates a script that swaps the branched representation of value with its equivalent flattened representation
+#Generates a script that swaps the nested representation of value with its equivalent flattened representation
 def generate_replacer_lines(field,out_field):
     lines = [] 
     lines.extend(general_case(field,out_field))

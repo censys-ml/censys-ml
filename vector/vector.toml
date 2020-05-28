@@ -11,8 +11,7 @@ data_dir = "${DATA_DIR}"
 
 [transforms.parser]
   type = "json_parser" 
-  inputs = ["in"] 
-  drop_field = true
+  inputs = ["in"]
   drop_invalid = true
   field = "message"
 
