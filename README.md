@@ -63,7 +63,7 @@ To carry on with the transformation phase just execute the ***main.sh*** script 
 
  ```bash
 cd scripts
-sh main.sh
+bash main.sh
  ```
 
 Gracefully shutdown the process once its done.
@@ -76,7 +76,16 @@ The output dataset can be found in the ***output*** folder inside the vector dir
 
 **N.B.** Make sure that the correct **service file** is found in the ***auth*** folder inside the main ***config*** directory before proceeding.
 
-The schema set by these sources is subject to change and these can in turn affect the final dataset if the transformation is not working in accordance to them. This means that the model definition needs to be updated from time to time. **This is OPTIONAL** as the model definition is frequently updated. To Update the Model definition, open the pipenv shell. Simply run this line from the terminal (from the root project) to do so.
+The schema set by these sources is subject to change and these can in turn affect the final dataset if the transformation is not working in accordance to them. This means that the model definition needs to be updated from time to time. **This is OPTIONAL** as the model definition is frequently updated. 
+
+To Update the Model definition, either run the following 
+
+```bash
+cd censys_ml
+pipenv run python update_model.py
+```
+
+or open the pipenv shell. Simply run this line from the terminal (from the root project) to do so.
 
 ```bash
 pipenv shell

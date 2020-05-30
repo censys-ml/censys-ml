@@ -1,15 +1,15 @@
 import utils
 
-#numeric_types = [
-#    "BOOLEAN",
-#    "FLOAT",
-#    "INTEGER",
-#]
+numeric_types = [
+   "BOOLEAN",
+   "FLOAT",
+   "INTEGER",
+]
 
-#time_types = [
-#    "TIMESTAMP",
-#    "DATETIME",
-#]
+time_types = [
+   "TIMESTAMP",
+   "DATETIME",
+]
 
 string_types = [
     "STRING",

@@ -2,8 +2,7 @@
 export INPUT="file"
 export OUTPUT="file"
 
-CWD=$(pwd)
-VECTOR_DIR="${CWD}/vector"
+VECTOR_DIR="../vector"
 echo "Using the following as vector directory: $VECTOR_DIR"
 export DATA_DIR=$VECTOR_DIR"/data"
 export IN_FILE=$VECTOR_DIR"/input/*.json"
