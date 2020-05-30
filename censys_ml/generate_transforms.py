@@ -1,15 +1,15 @@
 import utils
 
-numeric_types = [
-    "BOOLEAN",
-    "FLOAT",
-    "INTEGER",
-]
+#numeric_types = [
+#    "BOOLEAN",
+#    "FLOAT",
+#    "INTEGER",
+#]
 
-time_types = [
-    "TIMESTAMP",
-    "DATETIME",
-]
+#time_types = [
+#    "TIMESTAMP",
+#    "DATETIME",
+#]
 
 string_types = [
     "STRING",
@@ -20,6 +20,7 @@ string_types = [
 #                                function_name='handle_numeric', 
 #                                data_lines=midlines)
 
+# Replaces any string field with an empty value
 def empty_check_lines(field):
     lines = []
     lines.append('if event["{}"] == " " or event["{}"] == "" then'.format(field, field))
@@ -27,12 +28,22 @@ def empty_check_lines(field):
     lines.append('end')
     return lines
 
-def general_case(out_field, field):
+def general_case(field, out_field):
     lines = []
-    lines.append('event["{}"] = event["{}"]'.format(out_field, field))
+    if out_field == field:
+        return lines
+    lines.append('event["{}"], event["{}"] = nil, event["{}"]'.format(field,out_field,field))
+    # lines.append('event["{}"] = event["{}"]'.format(out_field, field))
     if field[0] == 'p':
-        lines.append('event["{}"] = event["{}"]'.format(out_field, field[1:]))
+        lines.append('\n\t event["{}"], event["{}"] = nil, event["{}"]'.format(field[1:],out_field[1:],field[1:]))
     return lines
+
+# def generate_string_lines(field):
+#     lines = []
+#     lines.extend(empty_check_lines(field))
+#     if field[0] == 'p':
+#         lines.extend(empty_check_lines(field[1:]))
+#     return lines
 
 def generate_string_lines(field, out_field):
     lines = []
@@ -40,33 +51,46 @@ def generate_string_lines(field, out_field):
     lines.extend(empty_check_lines(out_field))
     return lines
 
+# def generate_numeric_lines(field, out_field):
+#     lines = []
+#     lines.extend(general_case(out_field, field))
+#     return lines
+
 def generate_numeric_lines(field, out_field):
     lines = []
     lines.extend(general_case(out_field, field))
     return lines
+
+# def generate_numeric_script(midlines):
+#     utils.write_script_to_file(file_name='numeric_field', 
+#                                function_name='handle_numeric', 
+#                                data_lines=midlines)
+
 
 def generate_string_script(midlines):
     utils.write_script_to_file(file_name='string_field', 
                                function_name='handle_string', 
                                data_lines=midlines)
 
+
 def generate_numeric_script(midlines):
     utils.write_script_to_file(file_name='numeric_field', 
                                function_name='handle_numeric', 
                                data_lines=midlines)
 
+
 def generate_generic_script(schema):
+    # generates a script that clears the output dataset after replacement
     lines = []
     general_script = \
-"""-- Remove all fields where the value is " "
--- for f,v in ipairs(event) do
---    if v == " " then
---        event[f] = nil
---    end
--- end
-"""
+    """-- Remove all fields where the value is " "
+    -- for f,v in ipairs(event) do
+    --    if v == " " then
+    --        event[f] = nil
+    --    end
+    -- end
+    """
     lines += general_script.split("\n")
-
     seen_fields = set()
     for field in schema:
         fields = field.split('.')
@@ -83,12 +107,24 @@ def generate_generic_script(schema):
                                function_name='handle_general', 
                                data_lines=lines)
 
+# Generates a script that swaps the nested representation of 
+# value with its equivalent flattened representation
+def generate_replacer_lines(field,out_field):
+    lines = [] 
+    lines.extend(general_case(field,out_field))
+    return lines
 
+def generate_replacer_script(midlines):
+    utils.write_script_to_file(file_name='replacer', 
+                               function_name='handle_replacement', 
+                               data_lines=midlines)    
+    
 def main():
     schema = utils.get_schema()
     numeric_lines = []
     # time_lines = []
     string_lines = []
+    replacer_lines = []
     
     for field in schema:
         _type = schema[field]['type']
@@ -99,12 +135,14 @@ def main():
         #     time_lines.append('event["{}"] = {}'.format(field, ''))
         elif _type in string_types:
             string_lines.extend(generate_string_lines(field, out_field))
+            # string_lines.extend(generate_string_lines(field))
+            
+        replacer_lines.extend(generate_replacer_lines(field, out_field))
     
     generate_numeric_script(numeric_lines)
     generate_string_script(string_lines)
+    generate_replacer_script(replacer_lines)
     generate_generic_script(schema)
-
-
 
 
 if __name__ == '__main__':

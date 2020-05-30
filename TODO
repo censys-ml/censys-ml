@@ -1,5 +1,0 @@
-Finish the numeric fields
-Dynamic nested vs non-nested fields
-Make sure file and stdin inputs work
-Come up with a method to dynamically branch based on field type
-Implement the report gathering feature from censys
