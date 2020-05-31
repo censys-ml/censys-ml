@@ -51,7 +51,7 @@ def generate_string_lines(field, out_field):
 
 def generate_numeric_lines(field, out_field):
     lines = []
-    lines.extend(general_case(out_field, field))
+    lines.extend(general_case(field, out_field))
     return lines
 
 
