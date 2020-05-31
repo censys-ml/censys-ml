@@ -1,4 +1,11 @@
 function handle_general(event)
+	-- Remove all fields where the value is " "
+	    -- for f,v in ipairs(event) do
+	    --    if v == " " then
+	    --        event[f] = nil
+	    --    end
+	    -- end
+	    
 	event["__restricted_location"] = nil
 	event["p110"] = nil
 	event["110"] = nil

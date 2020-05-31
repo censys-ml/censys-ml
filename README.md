@@ -23,14 +23,20 @@ pipenv install
 ###     Install Vector
 
 Vector is one on the key components of this project as it is used to transform or flatten the original dataset.
-To install vector, run the bash script ***setup.sh*** in the ***scripts*** folder. Vector can also be installed using curl
+To install vector, run the bash script ***setup.sh*** in the ***scripts*** folder. 
+
+Try the following...
+```bash
+$ bash scripts/setup.sh
+```
+
+Vector can also be installed using curl
 
 ```bash
 curl --proto '=https' --tlsv1.2 -sSf https://sh.vector.dev | sh
 ```
 
 Looking for other methods to install vector? Take a look at [Vector installation Methods](https://vector.dev/docs/setup/installation/)
-
 
 
 ## Usage
@@ -57,7 +63,7 @@ To carry on with the transformation phase just execute the ***main.sh*** script 
 
  ```bash
 cd scripts
-sh main.sh
+bash main.sh
  ```
 
 Gracefully shutdown the process once its done.
@@ -70,7 +76,16 @@ The output dataset can be found in the ***output*** folder inside the vector dir
 
 **N.B.** Make sure that the correct **service file** is found in the ***auth*** folder inside the main ***config*** directory before proceeding.
 
-The schema set by these sources is subject to change and these can in turn affect the final dataset if the transformation is not working in accordance to them. This means that the model definition needs to be updated from time to time. **This is OPTIONAL** as the model definition is frequently updated. To Update the Model definition, open the pipenv shell. Simply run this line from the terminal (from the root project) to do so.
+The schema set by these sources is subject to change and these can in turn affect the final dataset if the transformation is not working in accordance to them. This means that the model definition needs to be updated from time to time. **This is OPTIONAL** as the model definition is frequently updated. 
+
+To Update the Model definition, either run the following 
+
+```bash
+cd censys_ml
+pipenv run python update_model.py
+```
+
+or open the pipenv shell. Simply run this line from the terminal (from the root project) to do so.
 
 ```bash
 pipenv shell
@@ -83,7 +98,10 @@ cd censys_ml
 python update_model.py
 ```
 
+## Recommended tools
 
+- PyCharm
+- Python 3.7 + pipenv
 
 ## Resources
 
@@ -94,8 +112,6 @@ python update_model.py
 - Lua programming language
 - https://cloud.google.com/bigquery
 ```
-
-
 
 ## License
 

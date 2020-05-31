@@ -3,6 +3,7 @@ export INPUT="file"
 export OUTPUT="file"
 
 VECTOR_DIR="../vector"
+echo "Using the following as vector directory: $VECTOR_DIR"
 export DATA_DIR=$VECTOR_DIR"/data"
 export IN_FILE=$VECTOR_DIR"/input/*.json"
 export OUT_FILE=$VECTOR_DIR"/output/vector-%Y-%m-%d.json"
