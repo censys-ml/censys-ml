@@ -1,0 +1,35 @@
+data_dir = "./tests/test_vector/data"
+
+[sources.in]
+  include = ["./tests/test_vector/input/withP.json"]
+  type = "file"
+  fingerprinting.fingerprint_bytes = 0
+  fingerprinting.ignored_header_bytes = 0 
+  fingerprinting.strategy = "checksum"
+  start_at_beginning = true
+
+[transforms.parser]
+  inputs = ["in"]
+  type   = "json_parser"
+  field  = "message"
+  drop_invalid = true
+
+[transforms.lua]
+  inputs = ['parser']
+  type="lua"
+  search_dirs = ['./scripts/lua','./tests/scripts/']
+  source= '''
+require("general_field_safely")
+require("string_field")
+require("numeric_field")
+
+handle_string(event)
+handle_numeric(event)
+handle_general(event)
+'''
+
+[sinks.out]
+  inputs = ["lua"] 
+  type = "file"
+  encoding.codec = "ndjson"
+  path = "./tests/test_vector/output/withP.json"
