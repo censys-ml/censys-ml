@@ -1,15 +1,12 @@
 import configparser
 import json
 
-lua_dir = './scripts'
+lua_dir = './tests/scripts'
+model_def = './config/model_definition.json'
 
-def get_config():
-    config = configparser.ConfigParser()
-    config.read('../config/config.ini')
-    return config
 
 def get_schema():
-    with open(get_config()["censys"]["model_outfile"]) as _file:
+    with open(model_def) as _file:
         result = json.load(_file)
     return result
 
@@ -36,6 +33,7 @@ def generate_test_scripts(schema):
     lines += general_script.split("\n")
     seen_fields = set()
     for field in schema:
+        print(field)
         fields = field.split('.')
         if len(fields) == 1:
             continue

@@ -102,10 +102,4 @@ function handle_general(event)
 	event["6443"], event["Left_over.6443"] = nil, event["6443"]
 	event["p9090"], event["Left_Over.p9090"] = nil, event["p9090"]
 	event["9090"], event["Left_over.9090"] = nil, event["9090"]
-	event["p161"], event["Left_Over.p161"] = nil, event["p161"]
-	event["161"], event["Left_over.161"] = nil, event["161"]
-	event["p11211"], event["Left_Over.p11211"] = nil, event["p11211"]
-	event["11211"], event["Left_over.11211"] = nil, event["11211"]
-	event["p6379"], event["Left_Over.p6379"] = nil, event["p6379"]
-	event["6379"], event["Left_over.6379"] = nil, event["6379"]
 end
