@@ -33,7 +33,6 @@ def generate_test_scripts(schema):
     lines += general_script.split("\n")
     seen_fields = set()
     for field in schema:
-        print(field)
         fields = field.split('.')
         if len(fields) == 1:
             continue
