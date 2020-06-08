@@ -27,7 +27,7 @@ def printProgressBar (iteration, total, prefix='',
 
 def get_config():
     config = configparser.ConfigParser()
-    config.read('/Users/dagmawi/Desktop/censys-ml/config/config.ini')
+    config.read('../config/config.ini')
     return config
 
 def get_schema():
