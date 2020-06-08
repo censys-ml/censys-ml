@@ -45,7 +45,7 @@ def generate_string_lines(field, out_field):
     # lines.extend(empty_check_lines(field))
     lines.extend(empty_check_lines(out_field))
     if field[0] == 'p':
-        lines.extend(empty_check_lines(field[1:]))
+        lines.extend(empty_check_lines(out_field[1:]))
     return lines
 
 
