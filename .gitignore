@@ -113,4 +113,5 @@ venv.bak/
 ./legacy/*
 legacy/*
 config/auth/*
+scripts/lua/*
 
