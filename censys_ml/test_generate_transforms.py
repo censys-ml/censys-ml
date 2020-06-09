@@ -105,9 +105,7 @@ def test_numeric_mapping_with_mock_data(monkeypatch):
         global numeric_script
         numeric_script = generate_script(mid_lines)
         data = data_generator.fill_with_mock(numeric_fields= True)
-        data = json.dumps(data)
-        Json = json.loads(data)
-        Json = json_flatten.flatten(Json)
+        Json = json_flatten.flatten(data)
             
         numeric = lua.eval(numeric_script)
         numeric(Json)
