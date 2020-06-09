@@ -13,7 +13,7 @@ import json_flatten
 from lupa import LuaRuntime
 lua = LuaRuntime(unpack_returned_tuples=True)
 
-
+numeric_types = ['INTEGER', 'FLOAT', 'BOOLEAN']
 
 def test_generic(monkeypatch):
     check = ['event["double"] = nil', 'event["priple"] = nil', 'event["riple"] = nil']
@@ -92,8 +92,6 @@ def test_numeric_scripts(monkeypatch):
     generate_transforms.main()
  
 
-numeric_script = ''
-numeric_types = ['INTEGER', 'FLOAT', 'BOOLEAN']
 
 def test_numeric_mapping_with_mock_data(monkeypatch):
     def mock_schema():
@@ -102,7 +100,6 @@ def test_numeric_mapping_with_mock_data(monkeypatch):
         return results
 
     def review_numeric_lines(mid_lines):
-        global numeric_script
         numeric_script = generate_script(mid_lines)
         data = data_generator.fill_with_mock(numeric_fields= True)
         Json = json_flatten.flatten(data)
