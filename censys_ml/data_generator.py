@@ -3,66 +3,73 @@ import random
 
 numeric_types = ['INTEGER', 'BOOLEAN', 'FLOAT']
 string_types = ["STRING"]
-insisted_string = []
-strings = [''," ", "lorem ipsum", "[sdf,sfd]", "src = \"www.google.com\""]
+default_strings = [''," ", "lorem ipsum", "[sdf,sfd]", "src = \"www.google.com\""]
 
 def get_schema():
     with open('../config/model_definition.json','r') as _file:
         results = json.load(_file)
         return results
 
-def attacher(event,field,_type):
-    if len(field) > 1:
+
+#Function that builds and attaches descendant NODES to a ROOT field, and assigns values to its leaf field based on its _type
+def assign_field_to_json(root, nodes,_type, insisted_strings, return_string_values=True):
+    if len(nodes) > 1:
         try:
-            attacher(event[field[0]], field[1:], _type)
+            assign_field_to_json(root[nodes[0]], nodes[1:], _type, insisted_strings, return_string_values)
         except:
-            event[field[0]]={}
-            attacher(event[field[0]], field[1:], _type)
+            root[nodes[0]]={}
+            assign_field_to_json(root[nodes[0]], nodes[1:], _type, insisted_strings, return_string_values)
     else:
-        event[field[0]] = generate_value(_type)
+        root[nodes[0]] = generate_value(_type, insisted_strings, return_string_values)
 
-def generate_value(_type):
+def generate_value(_type, insisted_strings=[], return_string_values = True):
+    value = None
     if _type == 'INTEGER':
-       return str(random.randint(1,10000))
+       value = random.randint(1,10000)
     elif _type == 'BOOLEAN':
-       return str(bool(random.randint(0,1)))
+       value = bool(random.randint(0,1))
     elif _type == 'FLOAT':
-        return str(random.uniform(1,10000))
+       value = random.uniform(1,10000)
     elif _type == 'STRING':
-        if insisted_string != []:
-            return insisted_string[random.randint(0,len(insisted_string)-1)]
-        return strings[random.randint(0, 4)]
+        if insisted_strings != []:
+            value = insisted_strings[random.randint(0,len(insisted_string)-1)]
+        else:
+            value = default_strings[random.randint(0, 4)]
 
-def fill_with_mock(numeric_fields=False, string_fields=False, string=[]):
-    global insisted_string
-    insisted_string = string
-    gen_data = []
+            
+    if return_string_values:
+        return str(value)
+    else:
+        return value
+
+
+#returns a mock data filled with fields in the model definition
+#insisted_strings is a list of strings that will be used instead of the default_strings list
+def generate_mock_data(model= None ,numeric_fields=False, string_fields=False, insisted_strings=[], return_string_values = True):
+    desired_types = []
+    mock_data = json.loads('{}')
+    
     if numeric_fields == True:
-        gen_data.extend(numeric_types)
+        desired_types.extend(numeric_types)
     if string_fields == True:
-        gen_data.extend(string_types)
-    model = get_schema()
-    withP = json.loads('{}')
+        desired_types.extend(string_types)
+    if model == None:
+        model = get_schema()
     
     for field in model:
         _type = model[field]['type']
-        fields = field.split('.')
-        if _type in gen_data:
-            if fields[0][0] == 'p':
-               _fields = []
-               _fields.extend(fields)
-               _fields[0] = _fields[0][1:]
-               attacher(withP, _fields, _type)
-            attacher(withP, fields, _type)
+        if _type in desired_types:
+            nodes = field.split('.')
+            if field[0] == 'p':
+               nodes_without_p = field[1:].split('.')
+               assign_field_to_json(mock_data, nodes_without_p, _type, insisted_strings, return_string_values)
+            assign_field_to_json(mock_data, nodes, _type, insisted_strings, return_string_values)
 
-
-    sample_json = {'withP': withP}
-    insisted_string = []
-    return withP
+    return mock_data
             
 
 if __name__ == '__main__':
-    data = (fill_with_mock(numeric_fields=True, string_fields=True))
+    data = generate_mock_data(numeric_fields=True, string_fields=True, return_string_values = False)
     with open('mock_data.json','w') as _file:
         json.dump(data,_file,)
     
