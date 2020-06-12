@@ -7,6 +7,8 @@ verify_ssl = true
 
 [packages]
 google-cloud-bigquery = "*"
+lupa = "*"
+json-flatten = "*"
 
 [requires]
-python_version = "3.7"
+python_version = "3.8"
