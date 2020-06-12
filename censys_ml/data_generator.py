@@ -11,18 +11,8 @@ def get_schema():
         return results
 
 
-#Function that builds and attaches descendant NODES to a ROOT field, and assigns values to its leaf field based on its _type
-def assign_field_to_json(root, nodes,_type, insisted_strings, return_string_values=True):
-    if len(nodes) > 1:
-        try:
-            assign_field_to_json(root[nodes[0]], nodes[1:], _type, insisted_strings, return_string_values)
-        except:
-            root[nodes[0]]={}
-            assign_field_to_json(root[nodes[0]], nodes[1:], _type, insisted_strings, return_string_values)
-    else:
-        root[nodes[0]] = generate_value(_type, insisted_strings, return_string_values)
 
-def generate_value(_type, insisted_strings=[], return_string_values = True):
+def random_value_for_type(_type, return_string_values = True):
     value = None
     if _type == 'INTEGER':
        value = random.randint(1,10000)
@@ -31,9 +21,6 @@ def generate_value(_type, insisted_strings=[], return_string_values = True):
     elif _type == 'FLOAT':
        value = random.uniform(1,10000)
     elif _type == 'STRING':
-        if insisted_strings != []:
-            value = insisted_strings[random.randint(0,len(insisted_string)-1)]
-        else:
             value = default_strings[random.randint(0, 4)]
 
             
@@ -43,9 +30,23 @@ def generate_value(_type, insisted_strings=[], return_string_values = True):
         return value
 
 
-#returns a mock data filled with fields in the model definition
-#insisted_strings is a list of strings that will be used instead of the default_strings list
-def generate_mock_data(model= None ,numeric_fields=False, string_fields=False, insisted_strings=[], return_string_values = True):
+
+#Function that builds and attaches descendant NODES to a ROOT field, and assigns values to its leaf field based on its _type
+def assign_field_to_dict(root, nodes, _type, return_string_values=True):
+    if len(nodes) > 1:
+        try:
+            assign_field_to_dict(root[nodes[0]], nodes[1:], _type, return_string_values)
+        except:
+            root[nodes[0]]={}
+            assign_field_to_dict(root[nodes[0]], nodes[1:], _type, return_string_values)
+    else:
+        root[nodes[0]] = random_value_for_type(_type, return_string_values)
+
+
+
+def generate_mock_data(model= None ,numeric_fields=False, string_fields=False, return_string_values = True):
+    """ returns a dict filled with mock data from fields in the model definition"""
+
     desired_types = []
     mock_data = json.loads('{}')
     
@@ -62,8 +63,8 @@ def generate_mock_data(model= None ,numeric_fields=False, string_fields=False, i
             nodes = field.split('.')
             if field[0] == 'p':
                nodes_without_p = field[1:].split('.')
-               assign_field_to_json(mock_data, nodes_without_p, _type, insisted_strings, return_string_values)
-            assign_field_to_json(mock_data, nodes, _type, insisted_strings, return_string_values)
+               assign_field_to_dict(mock_data, nodes_without_p, _type, return_string_values)
+            assign_field_to_dict(mock_data, nodes, _type, return_string_values)
 
     return mock_data
             

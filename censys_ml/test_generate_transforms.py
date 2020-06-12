@@ -1,3 +1,8 @@
+import sys, os
+myPath = os.path.dirname(os.path.abspath(__file__))
+print(myPath)
+sys.path.insert(0, myPath + '/')
+
 import json
 import pytest
 from data_generator import generate_mock_data
@@ -10,6 +15,8 @@ lua = LuaRuntime(unpack_returned_tuples=True)
 
 numeric_types = ['INTEGER', 'FLOAT', 'BOOLEAN']
 
+def skip_writing_function(file_name, function_name, data_lines):
+    return
 
 def generate_script(mid_lines):
     lines = 'function(event)\n'
@@ -19,8 +26,17 @@ def generate_script(mid_lines):
     lines+= 'end'
     return lines
 
-def skip_writing_function(file_name, function_name, data_lines):
-    return
+#Tests Below
+
+def test_general_case():
+    lines = generate_transforms.general_case('protocols','protocols')
+    assert lines == []
+    lines = generate_transforms.general_case('__restricted.location', '__restricted_location')
+    assert lines == ['event["__restricted.location"], event["__restricted_location"] = nil, event["__restricted.location"]']
+    lines = generate_transforms.general_case('p11.restricted.location', 'p11_restricted_location')
+    assert lines == ['event["p11.restricted.location"], event["p11_restricted_location"] = nil, event["p11.restricted.location"]',
+                     '\n\t event["11.restricted.location"], event["11_restricted_location"] = nil, event["11.restricted.location"]']    
+
 
 def test_generic(monkeypatch):
     check = ['event["double"] = nil', 'event["priple"] = nil', 'event["riple"] = nil']
@@ -41,14 +57,6 @@ def test_generic(monkeypatch):
     generate_transforms.generate_generic_script(schema)
 
 
-def test_general_case():
-    lines = generate_transforms.general_case('protocols','protocols')
-    assert lines == []
-    lines = generate_transforms.general_case('__restricted.location', '__restricted_location')
-    assert lines == ['event["__restricted.location"], event["__restricted_location"] = nil, event["__restricted.location"]']
-    lines = generate_transforms.general_case('p11.restricted.location', 'p11_restricted_location')
-    assert lines == ['event["p11.restricted.location"], event["p11_restricted_location"] = nil, event["p11.restricted.location"]',
-                     '\n\t event["11.restricted.location"], event["11_restricted_location"] = nil, event["11.restricted.location"]']    
 
 def test_string_scripts(monkeypatch):
     def mock_schema():
@@ -110,10 +118,10 @@ def test_numeric_mapping_with_mock_data(monkeypatch):
         numeric_script = generate_script(mid_lines)
         schema = mock_schema()
         data = generate_mock_data(model = schema, numeric_fields= True)
-        Json = json_flatten.flatten(data)
+        flattened_data = json_flatten.flatten(data)
             
         handle_numeric = lua.eval(numeric_script)
-        handle_numeric(Json)
+        handle_numeric(flattened_data)
         
         schema = mock_schema()
         for field in schema:
@@ -121,11 +129,11 @@ def test_numeric_mapping_with_mock_data(monkeypatch):
             if _type in numeric_types:
                 nodes = field.split('.')
                 if len(nodes) == 1:
-                    assert Json[field] != None
+                    assert flattened_data[field] != None
                 else:
-                    assert Json[field] == None
+                    assert flattened_data[field] == None
                     if field[0] == 'p':
-                        assert Json[field] == None, field
+                        assert flattened_data[field] == None, field
                 
 
 
