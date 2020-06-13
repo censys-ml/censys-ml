@@ -98,6 +98,17 @@ cd censys_ml
 python update_model.py
 ```
 
+## Running Tests
+
+Run the following from the root directory to run the unit tests.
+
+```bash
+pipenv run python run_tests.py     
+```
+
+The code coverage report will be generated in the /coverage/ directory.
+Visit ```./coverage/index.html``` to view the report.
+
 ## Recommended tools
 
 - PyCharm
