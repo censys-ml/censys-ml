@@ -95,16 +95,17 @@ class TestStringScripts(unittest.TestCase):
             }
             lua_func(_json)
             schema = mock_schema()
-            for field in schema:
+            for field in _json:
                 assert not _json[field], "You have uncaught empty strings...check code"
 
         self.monkeypatch.setattr(utils, "get_schema", mock_schema)
         self.monkeypatch.setattr(utils, "write_script_to_file", skip_writing_function)
+        self.monkeypatch.setattr(generate_transforms, "generate_numeric_script", skip)
         self.monkeypatch.setattr(generate_transforms, "generate_string_script", review_lines)
         generate_transforms.main()
 
 
-@skip
+
 class TestNumericScripts(unittest.TestCase):
     def setUp(self):
         self.monkeypatch = MonkeyPatch()
@@ -137,7 +138,7 @@ class TestNumericScripts(unittest.TestCase):
         self.monkeypatch.setattr(generate_transforms, "generate_numeric_script", review_lines)
         generate_transforms.main()
 
-@skip
+
 class TestNumericMappingWithMockData(unittest.TestCase):
     def setUp(self):
         self.monkeypatch = MonkeyPatch()
