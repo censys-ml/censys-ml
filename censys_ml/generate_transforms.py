@@ -1,4 +1,4 @@
-import utils
+from censys_ml import utils
 
 numeric_types = [
    "BOOLEAN",

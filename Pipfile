@@ -9,6 +9,8 @@ verify_ssl = true
 google-cloud-bigquery = "*"
 lupa = "*"
 json-flatten = "*"
+pytest = "*"
+coverage = "*"
 
 [requires]
 python_version = "3.8"
