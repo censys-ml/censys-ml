@@ -13,7 +13,7 @@ dicty = {
 #url = "https://censys.io/api/v1/report/ipv4"
 
 
-#tried to get the report tbuilder working without useing censys tools and just using python requests but i kept getting a "malformed requests" error (400)
+#tried to get the report builder working without using censys tools and just using python requests but i kept getting a "malformed requests" error (400)
 #that's the reason i had to use the censys module but it only works for ipv4 at the moment.
 
 #the code to use the report builder (feed query data to the function) isnt written yet
@@ -40,19 +40,3 @@ def reportbuilder (par):
     with open(report_dir+"result"+time+" .json", 'w') as fp:
         json.dump(report, fp)
    
-
-
-
-
-
-
-
-
-
-
-    
-
-
-    
-
-
