@@ -3,7 +3,7 @@ import json
 from pprint import pprint
 from google.cloud import bigquery
 
-from censys_ml import utils
+import utils
 
 global_config = utils.get_config()
 
