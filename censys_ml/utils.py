@@ -1,10 +1,11 @@
 import configparser
 import json
 
+
 # Print iterations progress
-def printProgressBar (iteration, total, prefix='',
-                      suffix='', decimals=1,
-                      length=100, fill=' '):
+def printProgressBar(iteration, total, prefix='',
+                     suffix='', decimals=1,
+                     length=100, fill=' '):
     """
     Call in a loop to create terminal progress bar
     @params:
@@ -30,10 +31,12 @@ def get_config():
     config.read('../config/config.ini')
     return config
 
+
 def get_schema():
     with open(get_config()['censys']['model_outfile']) as _file:
         result = json.load(_file)
     return result
+
 
 def write_script_to_file(file_name, function_name, data_lines):
     begin_line = "function {}(event)".format(function_name)
@@ -42,6 +45,7 @@ def write_script_to_file(file_name, function_name, data_lines):
     file_name = '{}/{}.lua'.format(get_config()['censys']['lua_dir'], file_name)
     with open(file_name, 'w') as _file:
         _file.write(data)
+
 
 def main():
     print([g for g in get_config()])
