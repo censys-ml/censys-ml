@@ -28,7 +28,11 @@ def printProgressBar(iteration, total, prefix='',
 
 def get_config():
     config = configparser.ConfigParser()
+    config.read('./config/config.ini')
     config.read('../config/config.ini')
+    config.read('config/config.ini')
+    config.read('./censys-ml/config/config.ini')
+    config.read('../censys-ml/config/config.ini')
     return config
 
 

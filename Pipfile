@@ -7,6 +7,11 @@ verify_ssl = true
 
 [packages]
 google-cloud-bigquery = "*"
+lupa = "*"
+json-flatten = "*"
+pytest = "*"
+coverage = "*"
+atomicwrites = "*"
 
 [requires]
 python_version = "3.7"

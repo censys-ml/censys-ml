@@ -98,6 +98,7 @@ def remove_input_fields(schema, additional_fields=None):
     utils.write_script_to_file(file_name='remove_input_fields',
                                function_name='remove_input_fields',
                                data_lines=lines)
+    return lines
 
 
 def main():
