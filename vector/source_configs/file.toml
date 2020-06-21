@@ -1,0 +1,6 @@
+[sources.file]
+  type = "file" 
+  data_dir = '${DATA_DIR}'
+  ignore_older = 86400 
+  include = ["${IN_FILE}"] 
+  start_at_beginning = false 

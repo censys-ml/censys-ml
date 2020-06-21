@@ -1,15 +1,6 @@
-data_dir = "${DATA_DIR}"
-
-[sources.in]
-  include = ["${IN_FILE}"]
-  type = "${INPUT}"
-  fingerprinting.fingerprint_bytes = 0
-  fingerprinting.ignored_header_bytes = 0 
-  fingerprinting.strategy = "checksum"
-  start_at_beginning = true
 
 [transforms.parser]
-  inputs = ["in"]
+  inputs = ["${SOURCE_TYPE}"]
   type   = "json_parser"
   field  = "message"
   drop_invalid = true
@@ -17,20 +8,15 @@ data_dir = "${DATA_DIR}"
 [transforms.lua]
   inputs = ['parser']
   type="lua"
-  search_dirs = ['../scripts/lua', '../scripts/static']
+  search_dirs = ['../scripts/lua']
   source= '''
-require("date_utils")
-require("general_utils")
-require("variables")
+require("general_field")
 require("string_field")
 require("numeric_field")
-require("time_field")
-require("remove_input_fields")
 
 handle_string(event)
 handle_numeric(event)
-handle_time(event)
-remove_input_fields(event)
+handle_general(event)
 '''
 
 [sinks.out]

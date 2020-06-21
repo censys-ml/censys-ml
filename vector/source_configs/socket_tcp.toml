@@ -1,0 +1,14 @@
+[sources.socket_tcp]
+  type = "socket" # required
+  address = "${ADDRESS}"
+  max_length = 102400 
+  mode = "tcp"
+  shutdown_timeout_secs = 30
+
+  # TLS
+  tls.enabled = ${TLS}
+  tls.ca_path = "${CA_PATH}" 
+  tls.crt_path = "${CERT_PATH}" 
+  tls.key_pass = "${KEY_PASS}" 
+  tls.key_path = "${KEY_PATH}" 
+  tls.verify_certificate = ${TLS}

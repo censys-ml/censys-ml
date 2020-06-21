@@ -1,0 +1,12 @@
+[sources.http]
+  type = "http" 
+  address = "${ADDRESS}" 
+  encoding = "json" 
+
+  # TLS
+  tls.enabled = ${TLS}
+  tls.ca_path = "${CA_PATH}" 
+  tls.crt_path = "${CERT_PATH}" 
+  tls.key_pass = "${KEY_PASS}" 
+  tls.key_path = "${KEY_PATH}" 
+  tls.verify_certificate = ${TLS}
