@@ -9,7 +9,7 @@
   tls.crt_path = "${CERT_PATH}" 
   tls.key_pass = "${KEY_PASS}" 
   tls.key_path = "${KEY_PATH}" 
-  tls.verify_certificate = ${TLS}
+  tls.verify_certificate = ${VERIFY_CERT}
 
 
   

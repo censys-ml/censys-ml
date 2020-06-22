@@ -100,18 +100,24 @@ if [ ${TLS[$SOURCE_TYPE]} = true ]; then
         
         printf "path to Cert File (./): "
         read -r CERT_PATH
+
+        printf "Verify Certificate (false): "
+        read -r VERIFY_CERT
+        
+        printf "\npath to a certificate key file (./): "
+        read -r KEY_PATH
         
         printf "Pass phrase to unlock: "
         read -sr KEY_PASS
         
-        printf "\npath to a certificate key file (./): "
-        read -r KEY_PATH
+
     fi
     export TLS
     export CA_PATH="${CA_PATH:-./}"
-    export KEY_PASS="${KEY_PASS:-''}"
-    export CERT_PATH="${CERT_PATH:-./}"
     export KEY_PATH="${KEY_PATH:-./}"
+    export KEY_PASS="${KEY_PASS:-''}"
+    export VERIFY_CERT="${VERIFY_CERT:-false}"
+    export CERT_PATH="${CERT_PATH:-./}"
 fi
 
 export SOURCE_TYPE
