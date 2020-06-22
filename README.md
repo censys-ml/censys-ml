@@ -88,7 +88,7 @@ Want to handle larger data? If so, Kafka streaming is also an option **with  [Ka
 
 ### HTTP
 
-Data can also be retrieved from HTTP requests.  To use this source set the `source` to `http` **This component exposes a configured port. You must ensure your network allows access to this port.** Set the ADDRESS variable as a text of the target IP and port to listen for connections like such  `"0.0.0.0:80"` . A JSON encoding format is only supported. TLS is supported. For advanced options check out the HTTP section in docs. This source supports TLS over TCP connection mode
+Data can also be retrieved from HTTP requests.  To use this source set the `source` to `http` **This component exposes a configured port. You must ensure your network allows access to this port.** Set the ADDRESS variable as a text of the target IP and port to listen for connections like such  `"0.0.0.0:80"` . A JSON encoding format is only supported. TLS is supported. For advanced options check out the HTTP section in docs. This source supports TLS.
 
 ### Splunk HEC Source
 
@@ -114,7 +114,9 @@ Docker engine daemon can also act as a source. A Docker API `>= 1.24`  and  `Jso
 
 This source ingests data through the syslog protocol. To use this source, set the `source` to `syslog`. A syslog protocol uses a socket connection. So the same steps in the socket section can be followed. syslog is also supports TLS over TCP connection mode
 
+### Journald
 
+Data can also be ingested through Systemd's Journald utility. The [`journalctl`](https://vector.dev/docs/reference/sources/journald/#journalctl) binary is required, this is the interface Vector uses to retrieve JournalD logs. User must also be part of the `systemd-journal` group in order to execute the [`journalctl`](https://vector.dev/docs/reference/sources/journald/#journalctl) binary. Checkpoints are set for every batch that is read. The batch_size option limits this size. if needed entries from alternate boots can be included. The full path of the [`journalctl`](https://vector.dev/docs/reference/sources/journald/#journalctl) executable must also be specified. Units are monitored once process has began. To select which units to monitor simply specify there names separated with a comma as such `.unit1,unit2`. any unit lacking a `"."` will have a `".service"` appended to it to make it a valid service unit name.
 
 ------
 
