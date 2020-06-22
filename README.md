@@ -55,7 +55,7 @@ python generate_transforms.py
 
  ###        Handling Datasets
 
-Currently, this tool supports a number of sources. Supported sources are documented right beneath this section. The datasets also need to be represented by a **single-line** **JSON** file. As far as the output dataset goes, you can find it in the ***output*** folder inside main *vector* directory.
+Currently, this tool supports a number of sources. Supported sources are documented right beneath this section. The datasets also need to be structured into a standard **valid** **JSON**. As far as the output dataset goes, you can find it in the ***output*** folder inside main *vector* directory.
 
 ###         Transforming Datasets
 
