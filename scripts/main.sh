@@ -65,12 +65,13 @@ if [ $SOURCE_TYPE == docker ]; then
     export IMAGE=$func_result
 fi
 
-# Assesses what type of connection is intended if source type is socket
+# Assesses what type of connection is intended if source type is socket or syslog
 if [ $SOURCE_TYPE == socket ] || [ $SOURCE_TYPE == syslog ]; then
     assign_value 'Socket Connection Mode' 'tcp'
     MODE=$func_result
     if [ $MODE == unix ]; then
         assign_value 'Absolute path to conn:' './'
+        export ADDRESS=$func_result
     fi
     SOURCE_TYPE=socket_$MODE
 fi
@@ -108,7 +109,7 @@ if [ ${TLS[$SOURCE_TYPE]} = true ]; then
     fi
     export TLS
     export CA_PATH="${CA_PATH:-./}"
-    export KEY_PASS=''
+    export KEY_PASS="${KEY_PASS:-''}"
     export CERT_PATH="${CERT_PATH:-./}"
     export KEY_PATH="${KEY_PATH:-./}"
 fi
