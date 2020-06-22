@@ -8,15 +8,19 @@
 [transforms.lua]
   inputs = ['parser']
   type="lua"
-  search_dirs = ['../scripts/lua']
+  search_dirs = ['../scripts/lua', '../scripts/static']
   source= '''
-require("general_field")
+require("date_utils")
+require("general_utils")
+require("variables")
 require("string_field")
 require("numeric_field")
-
+require("time_field")
+require("remove_input_fields")
 handle_string(event)
 handle_numeric(event)
-handle_general(event)
+handle_time(event)
+remove_input_fields(event)
 '''
 
 [sinks.out]
