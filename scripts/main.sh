@@ -27,6 +27,15 @@ TLS+=(
     ["syslog_tcp"]=true
     ["logplex"]=true
     ["http"]=true
+
+    ["docker"]=false
+    ["file"]=false
+    ["socket_udp"]=false
+    ["journald"]=false
+    ["socket_unix"]=false
+    ["stdin"]=false
+    ["syslog_udp"]=false
+    ["syslog_unix"]=false
 )
 
 #echos description and default value and recieves input
@@ -40,6 +49,19 @@ function assign_value () {
     read -r var
     func_result="${var:-$2}"
 }
+
+#echos description and default value and recieves input and makes them usable for array
+#  like values in vector configurations
+function assign_multi_value () {
+    #$1 is description and $2 is default value for a single item $3 is default item for the array as a whole
+    assign_value $1 $2
+    if [ -n "$func_result" ]; then
+        var=\"$func_result\"
+        func_result=${var//,/\",\"}
+    fi
+    func_result="${func_result:-$3}"
+}
+
 
 
 echo "Using the following as vector directory: $VECTOR_DIR"
@@ -59,10 +81,39 @@ fi
 
 #handles Env variables for Docker data source
 if [ $SOURCE_TYPE == docker ]; then
-    assign_value 'Include Container' ''
-    export CONTAINER=$func_result
-    assign_value 'Include Image' ''
-    export IMAGE=$func_result
+    assign_multi_value 'Include Container' ''
+    export CONTAINERS=$func_result
+    assign_multi_value 'Include Image' ''
+    export IMAGES=$func_result
+fi
+
+
+
+#handles Env variables for Kafka data source
+if [ $SOURCE_TYPE == kafka ]; then
+    assign_value 'Bootstrap Servers' ''
+    export BOOTSTRAP_SERVERS=$func_result
+    assign_value 'Group ID for consumer Group' ''
+    export GROUP_ID=$func_result
+    assign_value 'Field name to assign for Kafka Message' 'message_key'
+    export KEY_FIELD=$func_result
+    assign_multi_value 'Topics' ''
+    export TOPICS=$func_result
+fi
+
+
+#handles Env variables for Journald data source
+if [ $SOURCE_TYPE == journald ]; then
+    assign_value 'Batch size' '16'
+    export BATCH_SIZE=$func_result
+    assign_value 'Current_boot_only' 'true'
+    export CURRENT_BOOT_ONLY=$func_result
+    assign_value 'Journalctl path' 'journalctl'
+    export JOURNALCTL_PATH=$func_result
+    assign_multi_value "Units" '' ''
+    echo $func_result
+    export UNITS=$func_result
+    export DATA_DIR=$VECTOR_DIR"/data"
 fi
 
 # Assesses what type of connection is intended if source type is socket or syslog
@@ -83,18 +134,24 @@ if ! [ -z ${address[$SOURCE_TYPE]} ]; then
 fi
 
 #Recieves Token for a splunk_hec source
+if [ $SOURCE_TYPE == http ]; then
+    assign_multi_value 'Headers' ''
+    export HEADERS=$func_result
+fi
+
+#Recieves Token for a splunk_hec source
 if [ $SOURCE_TYPE == splunk_hec ]; then
     assign_value 'Token' ''
     export TOKEN=$func_result
 fi
 
 # Handle if connection needs TLS (for tcp mode in scoket, http and vector)
-if [ ${TLS[$SOURCE_TYPE]} = true ]; then
+if [ ${TLS[$SOURCE_TYPE]} == true ]; then
     printf "Enable TLS (false): "
-    read -r TLS
-    TLS="${TLS:-false}"
+    read -r ENABLE_TLS
+    ENABLE_TLS="${ENABLE_TLS:-false}"
     
-    if [ $TLS == true ]; then
+    if [ $ENABLE_TLS == true ]; then
         printf "path to CA File (./): "
         read -r CA_PATH
         
@@ -112,7 +169,7 @@ if [ ${TLS[$SOURCE_TYPE]} = true ]; then
         
 
     fi
-    export TLS
+    export ENABLE_TLS
     export CA_PATH="${CA_PATH:-./}"
     export KEY_PATH="${KEY_PATH:-./}"
     export KEY_PASS="${KEY_PASS:-''}"

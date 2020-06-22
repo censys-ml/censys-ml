@@ -72,7 +72,7 @@ The output dataset can be found in the ***output*** folder inside the vector dir
 
 ## Supported Sources
 
-N.B. All sources must supply data that is structured as a standard single-line JSON
+**Note**: All sources must supply data that is structured as a standard single-line JSON
 
 ### Standard Input (STDIN)
 
@@ -82,9 +82,9 @@ A straight forward data source is the console itself. Although this method might
 
 One of the supported sources for this mapping tool is a File input.  To use this source set the `source` to `file` The default pattern for recognition is any file ending with a  \**.json* extension. Once the transformation process has began, new files can still be added to the input directory and they will be caught automatically. Compressed files (gzip e.t.c) are also decompressed for reading but is not a reliable method. Once a file has been read and has a checkpoint set for it, it **WILL NOT** be read again. 
 
-### Apache Kafka -- NOT DONE
+### Apache Kafka
 
-Want to handle larger data? If so, Kafka streaming is also an option **with  [Kafka](https://kafka.apache.org/) version** `>= 0.8`. The `kafka` source uses [`librdkafka`](https://github.com/edenhill/librdkafka) under the hood but since this dependency is packaged with Vector, you do not need to install it. Data can also be ingested from different bootstrap servers, not just one. If there are different bootstrap servers that act as data sources set the BOOTSTRAP_SERVERS environment variable to a string of IPs separated by commas. The GROUP_ID and TOPICS env variables also needs to be filled out. For advanced options for this options look at the Advanced Kafka in docs.
+Want to handle larger data? If so, Kafka streaming is also an option **with  [Kafka](https://kafka.apache.org/) version** `>= 0.8`. The `kafka` source uses [`librdkafka`](https://github.com/edenhill/librdkafka) under the hood but since this dependency is packaged with Vector, you do not need to install it. A bootstrap server to listen to is required. When asked for supply the bootstrap server address as a string of IP followed by port, separated by a colon like this `"127.0.0.1:9092"`.Data can also be ingested from different bootstrap servers, not just one. If there are different bootstrap servers that act as data sources set the bootstrap servers variable to a string of IPs separated by commas like `"127.0.0.1:9092,3.345.323.2:9092"`. Once the servers are set, the group id for the consumer group should be specified. Afterwards comes the message_key, this key is the field that holds the message in the output log event. Finally the topics need to be set. These topics are Kafka topics to read events from. Simply supply the names separated by a comma like `"topic1,topic2"`
 
 ### HTTP
 
@@ -116,12 +116,6 @@ This source ingests data through the syslog protocol. To use this source, set th
 
 
 
-
-
-
-
-
-
 ------
 
 |    Sources     | Source function | Multiple OS support | OpenSSL Over TLS | Guaranteed Data Delivery in all cases* |
@@ -139,6 +133,10 @@ This source ingests data through the syslog protocol. To use this source, set th
 |     Syslog     |    `recieve`    |          ✅          |       `-`        |                   ❌                    |
 
 *. Some sources have been given negative feedback under this field, this DOES NOT mean that they do not have modes that guarantee data delivery. But rather in some modes, these sources makes best-effort delivery guarantee and In rare cases can lose data
+
+### Enabling TLS
+
+TLS is not used by default. If a connection is to be set up with TLS, configurations such as Absolute path to an additional CA certificate file; Absolute path to a certificate file used to identify the connection; Absolute path to a certificate key file used to identify the connection and its key pass should be specified. 
 
 
 
