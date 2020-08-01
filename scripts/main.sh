@@ -70,7 +70,7 @@ assign_value 'Is there an existing source Config y/n' ''
 EXISTING_CONFIG=$func_result
 
 if [ $EXISTING_CONFIG == y ] || [ $EXISTING_CONFIG == Y ]; then
-    assign_value 'Absolute path to config file' ''
+    assign_value 'Relative path to config file' ''
     export CONFIG_PATH=$func_result
     assign_value 'Source Id' ''
     export SOURCE_TYPE=$func_result
