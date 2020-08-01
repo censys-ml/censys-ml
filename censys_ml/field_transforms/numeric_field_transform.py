@@ -1,5 +1,4 @@
-#from censys_ml.field_transforms import utils
-import utils
+from censys_ml.field_transforms import utils
 
 def encode_SHA_support(input_field, output_field):
     #SHA-1	Less than 2048 bits	—	—
@@ -73,6 +72,9 @@ def generate_numeric_lines(input_field, output_field):
     lines.extend(extract_feature_from_field(input_field, output_field))
     if input_field[0] == 'p':
         lines.extend(extract_feature_from_field(input_field[1:], output_field[1:]))
+    lines.extend(utils.handle_general_case(input_field=input_field,
+                                           output_field=output_field,
+                                           line_generator=utils.generate_numeric_line))
     return lines
 
 
