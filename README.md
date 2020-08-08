@@ -50,7 +50,7 @@ To do this, simply execute the ***generate_transforms*** module in the ***censys
 
  ```bash
 cd censys_ml
-python generate_transforms.py
+pipenv run python generate_lua_transforms.py
  ```
 
  ###        Handling Datasets
