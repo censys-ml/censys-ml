@@ -36,7 +36,7 @@ def reportBuilder (par):
         json.dump(report, fp)
     return report
 
-def machineEncode (report):
+def oneHotEncode (report):
     data = report["results"]
     count = len(data)
     keys = []
@@ -77,5 +77,3 @@ def machineEncode (report):
     report_dir = global_config['censys']['report_dir']
     with open(report_dir+"result"+time+" OHE.json", 'w') as fp:
        json.dump(new_list, fp)
-
-machineEncode(reportBuilder(dicty))
