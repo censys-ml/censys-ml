@@ -30,12 +30,12 @@ def encode_RSA_key_length(input_field, output_field):
     return lines
 
 
-def encode_TLS_certificate_version(input_field, output_field):
+def encode_certificate_version(input_field, output_field):
     lines = []
     available_versions = [1,2] #3 is left for one-hot encoding
     for version in available_versions:
         lines.append(
-            f'event["{output_field}_{version}"] = encode_TLS_version(event["{input_field}"])["v{version}"]'
+            f'event["{output_field}_{version}"] = encode_certificate_version(event["{input_field}"])["v{version}"]'
         )
     return lines
     
@@ -60,7 +60,7 @@ def extract_feature_from_field(input_field, output_field):
         lines.extend(encode_RSA_key_length(input_field, output_field))
         lines.extend(encode_SHA_support(input_field, output_field))
     elif 'tls.certificate.parsed.version' in input_field:
-        lines.extend(encode_TLS_certificate_version(input_field, output_field))
+        lines.extend(encode_certificate_version(input_field, output_field))
     elif 'status_code' in input_field:
         lines.extend(encode_status_code(input_field, output_field))
     return lines

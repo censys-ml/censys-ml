@@ -43,7 +43,7 @@ end
 
 
 
-function encode_TLS_version(str)
+function encode_certificate_version(str)
     if str ~= nil and str ~= '' and str ~= ' ' then
     	result = {
             v1   = 0,
@@ -58,6 +58,23 @@ function encode_TLS_version(str)
             v2   = nil,
             v3   = nil,
         }
+    end
+end
+
+function is_ashrae(str)
+    if str ~= nil and str ~= '' and str ~= ' ' then
+    	result = {
+            v555 = 1,
+            v666 = 1,
+            v777 = 1,
+            v888 = 1,
+            v911 = 1,
+            v999 = 1,
+            v1111 = 1,
+        }
+	return result['v'..str] and 1 or 0
+    else
+	return nil
     end
 end
 
