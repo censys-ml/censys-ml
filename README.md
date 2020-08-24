@@ -50,12 +50,12 @@ To do this, simply execute the ***generate_transforms*** module in the ***censys
 
  ```bash
 cd censys_ml
-python generate_transforms.py
+pipenv run python generate_lua_transforms.py
  ```
 
  ###        Handling Datasets
 
-Currently, this tool only handles file inputs and output. This means that the input files must be in the right directory before you can expect to carry on the transformation. All input dataset **MUST** be found in the ***input*** folder inside the main ***vector*** directory. The datasets also need to be represented by a **single-line** **JSON** file. As far as the output dataset goes, you can find it in the ***output*** folder inside main *vector* directory.
+Currently, this tool supports a number of sources. Supported sources are documented right beneath this section. The datasets also need to be structured into a standard **valid** **JSON**. As far as the output dataset goes, it can be found in the ***output*** folder inside main *vector* directory.
 
 ###         Transforming Datasets
 
@@ -66,9 +66,79 @@ cd scripts
 bash main.sh
  ```
 
-Gracefully shutdown the process once its done.
+Please supply inputs based on the selected source type. Afterwards, Gracefully shutdown the process once its done.
 
 The output dataset can be found in the ***output*** folder inside the vector directory, It will be named with an extension of the date the transformation was carried out. the final dataset should be a flattened JSON version of the original dataset represented in a single line.
+
+## Supported Sources
+
+**Note**: All sources must supply data that is structured as a standard single-line JSON
+
+### Standard Input (STDIN)
+
+A straight forward data source is the console itself. Although this method might be tedious to insert large data it is still an option. This method might come in handy when self analyzed data needs to be included in the report. This input method is the default if no input method is supplied by the user. Inputs still need to be single line JSONs. Every line input is considered as a separate event and hence its own output JSON will be generated for it.
+
+### File Inputs
+
+One of the supported sources for this mapping tool is a File input.  To use this source set the `source` to `file` The default pattern for recognition is any file ending with a  \**.json* extension. Once the transformation process has began, new files can still be added to the input directory and they will be caught automatically. Compressed files (gzip e.t.c) are also decompressed for reading but is not a reliable method. Once a file has been read and has a checkpoint set for it, it **WILL NOT** be read again. 
+
+### Apache Kafka
+
+Want to handle larger data? If so, Kafka streaming is also an option **with  [Kafka](https://kafka.apache.org/) version** `>= 0.8`. The `kafka` source uses [`librdkafka`](https://github.com/edenhill/librdkafka) under the hood but since this dependency is packaged with Vector, you do not need to install it. A bootstrap server to listen to is required. When asked for supply the bootstrap server address as a string of IP followed by port, separated by a colon like this `"127.0.0.1:9092"`.Data can also be ingested from different bootstrap servers, not just one. If there are different bootstrap servers that act as data sources set the bootstrap servers variable to a string of IPs separated by commas like `"127.0.0.1:9092,3.345.323.2:9092"`. Once the servers are set, the group id for the consumer group should be specified. Afterwards comes the message_key, this key is the field that holds the message in the output log event. Finally the topics need to be set. These topics are Kafka topics to read events from. Simply supply the names separated by a comma like `"topic1,topic2"`
+
+### HTTP
+
+Data can also be retrieved from HTTP requests.  To use this source set the `source` to `http` **This component exposes a configured port. You must ensure your network allows access to this port.** Set the ADDRESS variable as a text of the target IP and port to listen for connections like such  `"0.0.0.0:80"` . A JSON encoding format is only supported. TLS is supported. For advanced options check out the HTTP section in docs. This source supports TLS.
+
+### Splunk HEC Source
+
+This source ingests data through the [Splunk HTTP Event Collector protocol](https://docs.splunk.com/Documentation/Splunk/8.0.0/Data/HECRESTendpoints). To use this source set the `source` to `splunk_hec`. A valid address, meaning an IP followed by a port number should be assigned afterwards. A `token` is used to authorize connection, so please do authorize. This source also supports TLS
+
+### Heroku Logplex Source
+
+This source ingests data through the [Heroku Logplex HTTP Drain protocol](https://github.com/heroku/logplex/blob/master/doc/README.http_drains.md). To use this source set the `source` to `logplex`. A valid address, meaning an IP followed by a port number should be assigned afterwards. This source supports TLS.
+
+### **Socket**
+
+Custom socket connections are also an option.  To use this source set the `source` to `socket`. Set the MODE env variable to either 'udp', ' tcp' or 'unix' based on your socket connection type. In a tcp connection mode TLS can be enabled. If the connection mode is set to 'unix', the path to the absolute unix socket should be set. For advanced settings, take a look at the Socket section in docs. A Socket connection source also supports TLS over TCP connection mode
+
+### Vector
+
+If there already exists a vector instance that acts as an upstream, it can be used as a data source for this instance.  To use this source set the `source` to `vector`. The dataset from the upstream instance can be ingested over a socket connection. Since we only support json format , please make sure that the data coming through this source was a valid JSON prior to the encoding. vector is also supports TLS over TCP connection mode
+
+### Docker
+
+Docker engine daemon can also act as a source. A Docker API `>= 1.24`  and  `Json-file` logging driver are required and so should be installed first. To use this source set the `source` to `docker`. Please note a connection to the docker daemon is only automated if the active user can and has privilege to run `docker ps`.  This Plugin allows the consumption of data from a container and an image. To supply the container or image please, set the field `container` to the name of the desired container. The same goes for image as well.
+
+### Syslog
+
+This source ingests data through the syslog protocol. To use this source, set the `source` to `syslog`. A syslog protocol uses a socket connection. So the same steps in the socket section can be followed. syslog is also supports TLS over TCP connection mode
+
+### Journald
+
+Data can also be ingested through Systemd's Journald utility. The [`journalctl`](https://vector.dev/docs/reference/sources/journald/#journalctl) binary is required, this is the interface Vector uses to retrieve JournalD logs. User must also be part of the `systemd-journal` group in order to execute the [`journalctl`](https://vector.dev/docs/reference/sources/journald/#journalctl) binary. Checkpoints are set for every batch that is read. The batch_size option limits this size. if needed entries from alternate boots can be included. The full path of the [`journalctl`](https://vector.dev/docs/reference/sources/journald/#journalctl) executable must also be specified. Units are monitored once process has began. To select which units to monitor simply specify there names separated with a comma as such `.unit1,unit2`. any unit lacking a `"."` will have a `".service"` appended to it to make it a valid service unit name.
+
+------
+
+|    Sources     | Source function | Multiple OS support | OpenSSL Over TLS | Guaranteed Data Delivery in all cases* |
+| :------------: | :-------------: | :-----------------: | :--------------: | :------------------------------------: |
+|      File      |    `collect`    |          ✅          |       `-`        |                   ❌                    |
+|     Stdin      |    `recieve`    |          ✅          |       `-`        |                   ✅                    |
+|     Docker     |    `collect`    |          ✅          |        ✅         |                   ❌                    |
+|     Socket     |    `recieve`    |          ✅          |        ✅         |                   ❌                    |
+|      HTTP      |    `recieve`    |          ✅          |        ✅         |                   ✅                    |
+|     Kafka      |    `collect`    |          ✅          |        ✅         |                   ✅                    |
+|     Vector     |    `recieve`    |          ✅          |        ✅         |                   ❌                    |
+|    Journald    |    `collect`    |          ❌          |       `-`        |                   ✅                    |
+| Heroku Logplex |    `recieve`    |          ✅          |        ✅         |                   ✅                    |
+|  Splunk  HEC   |    `recieve`    |          ✅          |        ✅         |                   ✅                    |
+|     Syslog     |    `recieve`    |          ✅          |       `-`        |                   ❌                    |
+
+*. Some sources have been given negative feedback under this field, this DOES NOT mean that they do not have modes that guarantee data delivery. But rather in some modes, these sources makes best-effort delivery guarantee and In rare cases can lose data
+
+### Enabling TLS
+
+TLS is not used by default. If a connection is to be set up with TLS, configurations such as Absolute path to an additional CA certificate file; Absolute path to a certificate file used to identify the connection; Absolute path to a certificate key file used to identify the connection and its key pass should be specified. 
 
 
 
