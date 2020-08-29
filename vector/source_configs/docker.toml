@@ -1,4 +1,4 @@
 [sources.docker]
-  type = "docker" # required
-  include_containers = [${CONTAINERS}]
-  include_images = [${IMAGES}] 
+    type = "docker" # required
+    include_containers = ['']
+    include_images = ['']

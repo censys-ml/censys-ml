@@ -31,6 +31,17 @@ def generate_output_field(input_field, field_type):
     return output_field
 
 
+def get_field_data(schema, input_field):
+    """
+    Grabs a type for a field
+    :param schema: censys model
+    :param input_field: censys field
+    :return:
+    """
+    data = schema[input_field]
+    return data
+
+
 def get_field_type(schema, input_field):
     """
     Grabs a type for a field
@@ -38,7 +49,7 @@ def get_field_type(schema, input_field):
     :param input_field: censys field
     :return:
     """
-    _type = schema[input_field]['type']
+    _type = get_field_data(schema, input_field)['type']
     return _type
 
 
@@ -108,27 +119,31 @@ def main():
     schema = utils.get_schema()
 
     for input_field in schema:
+        field_data = get_field_data(schema, input_field)
         field_type = get_field_type(schema, input_field)
         output_field = generate_output_field(input_field, field_type)
 
         if field_type in NUMERIC_TYPES:
             numeric_lines = numeric_field_transform.generate_numeric_lines(
                 input_field=input_field,
-                output_field=output_field
+                output_field=output_field,
+                field_data=field_data
             )
             all_numeric_lines.extend(numeric_lines)
 
         elif field_type in STRING_TYPES:
             string_lines = string_field_transform.generate_string_lines(
                 input_field=input_field,
-                output_field=output_field
+                output_field=output_field,
+                field_data=field_data
             )
             all_string_lines.extend(string_lines)
 
         elif field_type in TIME_TYPES:
             time_lines = time_field_transform.generate_time_lines(
                 input_field=input_field,
-                output_field=output_field
+                output_field=output_field,
+                field_data=field_data
             )
             all_time_lines.extend(time_lines)
 

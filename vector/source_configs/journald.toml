@@ -1,7 +1,7 @@
 [sources.journald]
-  type = "journald"
-  batch_size = ${BATCH_SIZE}              
-  current_boot_only = ${CURRENT_BOOT_ONLY}        
-  data_dir = "${DATA_DIR}"       
-  journalctl_path = "${JOURNALCTL_PATH}"     
-  units = [${UNITS}]                           
+    type = "journald"
+    batch_size = 16
+    current_boot_only = true
+    data_dir = "${DATA_DIR}"
+    journalctl_path = 'journalctl'
+    units = ['']

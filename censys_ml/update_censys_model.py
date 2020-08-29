@@ -1,7 +1,16 @@
 import json
+import censys.ipv4
 from google.cloud import bigquery
 
 from censys_ml import utils
+
+CENSYS_API_KEY_FILEPATH = utils.get_config()['censys']['report_key']
+CENSYS_API_KEY = utils.get_json_data(filepath=CENSYS_API_KEY_FILEPATH)
+censys_api = censys.ipv4.CensysIPv4(**CENSYS_API_KEY)
+
+REPORT_WHITELIST = {
+    'country_code'
+}
 
 
 def data_from_json_file(path):
@@ -93,14 +102,47 @@ def parse_schema(fields):
 #     return item1
 
 
+# def handle_time_changes(model_definition, json_schema, k):
+#     TODO : handle model changes over time (str in 2018 -> int in 2019)
+#     if k in model_definition:
+#         model_definition[k] = type_precedence(item1=json_schema[k],
+#                                               item2=model_definition[k])
+#     else:
+#         pass
+
+
+report_cache = {}
+
+
+def grab_top_string_values(field, n_values=20):
+    report_args = {
+        "query": "",
+        "field": field,
+        "buckets": n_values
+    }
+
+    if field not in report_cache:
+        try:
+            report = censys_api.report(**report_args)
+            report_cache[field] = report
+        except Exception as e:
+            print(f"[!] Ran into an error '{str(e)}' when "
+                  f"generating a report for field '{field}'...")
+            report_cache[field] = dict()
+
+    return report_cache[field]
+
+
+def include_top_occurrences(json_schema, k):
+    if json_schema[k]['type'] == 'STRING' and any([v in k for v in REPORT_WHITELIST]):
+        json_schema[k]['top_values'] = grab_top_string_values(field=k)
+
+
 def update_model_definition(json_schema, model_definition):
     for k in json_schema:
+        include_top_occurrences(json_schema, k)
         model_definition[k] = json_schema[k]
-        # TODO : handle model changes over time (str in 2018 -> int in 2019)
-        # if k in model_definition:
-        #     model_definition[k] = type_precedence(item1=json_schema[k],
-        #                                           item2=model_definition[k])
-        # else:
+        # handle_time_changes(model_definition, json_schema, k)
 
 
 def get_model_definition(client, dataset_ref):
@@ -145,7 +187,6 @@ def main():
 #     fields = data_from_json('../../raw/aggregated_columns.json')
 #     tables = ['20170106', '20180530', '20190211']
 #     costs = {}
-
 #     for t, table in enumerate(tables):
 #         print "\n[X] Table {}".format(table)
 #
@@ -156,7 +197,6 @@ def main():
 #                 costs[field].append(get_dry_run(field, table) if field in columns else 0)
 #             else:
 #                 costs[field] = [get_dry_run(field, table) if field in columns else 0]
-
 #     avg_costs = {k: max(costs[k]) for k in costs}
 #     data_to_json('../../raw/aggregated_costs.json', avg_costs)
 # print("{} query will process {} bytes.".format(f, avg_proc))
