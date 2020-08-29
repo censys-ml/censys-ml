@@ -1,131 +1,101 @@
 from censys_ml.field_transforms import utils
 
 
-def one_hot_encode(input_field, output_field, options, function_name, field_prefix=""):
-    """
-    Generates lua lines that One-Hot encodes a field from its possible options
-    :param input_field: censys Field
-    :param input_field: flattened version of censys Field
-    :param options: array of the possible values the input field can have
-    :param function_name: the lua function that will encode the field
-    :param field_prefix: an optional string to be concatenated at the end of original field
-    :return:
-    """
+def encode_certificate_fields(input_field, output_field):
     lines = []
-    for option in options:
-        key = option
-        if type(option) == str:
-            key = f'"{option}"'
-        lines.append(
-            f'event["{output_field}_{field_prefix}{option}"] = {function_name}(event["{input_field}"])[{key}]'
-        )
-    return lines
+    parsed_versions = [1, 2]
+    sha_strs = ["SHA1"]
 
+    validity_lengths = ["days", "weeks", "months"]
+    # 8192 has been added to the options after i saw some records on censys that have it
+    rsa_lengths = [512, 768, 1024, 2048, 3072, 4096]
+    # 8192 has been considered but left out of the options after i saw some records on censys that have it
+    dh_prime_lengths = [512, 768, 1024, 2048, 3072, 4096]
+    # 521 has been left out
+    ecdsa_lengths = [256, 384]
+    # common exponents, 65537 is left out
+    rsa_exponents = [2, 3, 5, 17, 257]
 
-def generate_relating_lines(input_field, output_field, function_name, field_prefix=""):
-    """
-    Generates lua lines that checks other fields related to input_field for feature engineering
-    :param input_field: censys Field
-    :param input_field: flattened version of censys Field
-    :param function_name: the lua function that will encode the field
-    :param field_prefix: an optional string to be concatenated at the end of original field
-    :return:
-    """
-    lines = []
-    lines.append(
-        f'event["{output_field}_{field_prefix}"] = {function_name}(event, "{input_field}")'
-    )
-    return lines
-
-def generate_check_lines(input_field, output_field, function_name, field_prefix=""):
-    """
-    Generates lua lines that return bool on conditions set in the static script
-    :param input_field: censys Field
-    :param input_field: flattened version of censys Field
-    :param function_name: the lua function that will encode the field
-    :param field_prefix: an optional string to be concatenated at the end of original field
-    :return:
-    """
-    lines = []
-    lines.append(
-        f'event["{output_field}_{field_prefix}"] = {function_name}(event["{input_field}"])'
-    )
-    return lines
-
-
-def extract_feature_from_field(input_field, output_field):
-    lines = []
     if 'rsa_public_key.length' in input_field or 'rsa_params.length' in input_field or 'dh_params.prime.length' in input_field:
-        lines.extend(one_hot_encode(input_field, output_field, [
-            512, 768, 1024, 2048, 3072, 4096
-            # 8192 has been added to the options after i saw some records on censys that have it
-        ], "encode_key_length", field_prefix="is_"))
-        lines.extend(one_hot_encode(input_field, output_field, [
-            "SHA1"
-        ], "encode_SHA_support", field_prefix="supports_"))
+        lines.extend(utils.one_hot_encode(input_field, output_field, rsa_lengths, "encode_key_length", "is_"))
+        lines.extend(utils.one_hot_encode(input_field, output_field, sha_strs, "encode_SHA_support", "supports_"))
+
     elif 'dh_params.prime.length' in input_field:
-        lines.extend(one_hot_encode(input_field, output_field, [
-            512, 768, 1024, 2048, 3072, 4096
-            # 8192 has been considered but left out of the options after i saw some records on censys that have it
-        ], "encode_key_length", field_prefix="is_"))
+        lines.extend(utils.one_hot_encode(input_field, output_field, dh_prime_lengths, "encode_key_length", "is_"))
+
     elif 'parsed.version' in input_field:
-        lines.extend(one_hot_encode(input_field, output_field, [
-            1, 2
-        ], "encode_certificate_version"))
+        lines.extend(utils.one_hot_encode(input_field, output_field, parsed_versions, "encode_certificate_version"))
+
     elif 'ecdsa_public_key.length' in input_field:
-        lines.extend(one_hot_encode(input_field, output_field, [
-            256, 384 # 521 has been left out
-        ], "encode_key_length", field_prefix='is_'))
-    elif 'status_code' in input_field:
-        lines.extend(one_hot_encode(input_field, output_field, [
-            'success',
-            'redirection',
-            'client_error',
-            'server_error'
-        ], "encode_status_code", field_prefix="is_"))
+        lines.extend(utils.one_hot_encode(input_field, output_field, ecdsa_lengths, "encode_key_length", 'is_'))
+
     elif 'rsa_public_key.exponent' in input_field or 'rsa_params.exponent' in input_field:
-        lines.extend(one_hot_encode(input_field, output_field, [
-            2, 3, 5, 17, 257  # common exponents, 65537 is left out
-        ], "encode_RSA_exponent", field_prefix="is_"))
+        lines.extend(utils.one_hot_encode(input_field, output_field, rsa_exponents, "encode_RSA_exponent", "is_"))
+
     elif 'validity.length' in input_field:
-        lines.extend(one_hot_encode(input_field, output_field, [
-            "days", "weeks", "months"
-        ], "encode_validity_length", field_prefix="in_"))
-    elif 'session_ticket.lifetime_hint' in input_field:
-        lines.extend(one_hot_encode(input_field, output_field, [
-            "minutes", "hours", "days" # the same one_hot_encode function was used although the functionality is different
-        ], "encode_validity_length", field_prefix="in_"))
-    elif 'smb_version.major' in input_field:
-        lines.extend(one_hot_encode(input_field, output_field, [
-            1, 2  # smb major version groups 3 has been left out
-        ], "encode_version_major", field_prefix="is_"))
-        output_field = output_field[:-6]
-        lines.extend(generate_relating_lines(input_field, output_field, 'version_number', 'version'))
-    elif 'amqp.banner.version.major' in input_field:
-        lines.extend(one_hot_encode(input_field, output_field, [
-            0  # 1 is left out
-        ], "encode_version_major", field_prefix="is_"))
-        output_field = output_field[:-6]
-        lines.extend(generate_relating_lines(input_field, output_field, 'version_number', 'version'))
-    elif 'rdp.banner.version.major' in input_field:
-        lines.extend(one_hot_encode(input_field, output_field, [
-            1, 2, 3, 4, 5, 6, 7, 8, 9  # rdp major versions, 10 is left out
-        ], "encode_version_major", field_prefix="is_"))
-        output_field = output_field[:-6]
-        lines.extend(generate_relating_lines(input_field, output_field, 'version_number', 'version'))
-    elif 'bacnet.device_id.vendor.id' in input_field:
-        lines.extend(generate_check_lines(input_field, output_field, 'is_ashrae', 'is_ashrae'))
+        lines.extend(utils.one_hot_encode(input_field, output_field, validity_lengths, "encode_validity_length", "in_"))
+
     elif 'basic_constraints.max_path_len' in input_field:
-        output_field = output_field[:-13]
-        lines.extend(generate_check_lines(input_field, output_field, 'has_no_sub_CA', 'has_no_subordinate_CA'))
+        lines.extend(utils.generate_check_lines(input_field, output_field[:-13], 'has_no_sub_CA', 'has_no_subordinate_CA'))
+
     return lines
 
 
-def generate_numeric_lines(input_field, output_field):
+def encode_service_version_fields(input_field, output_field):
     lines = []
-    lines.extend(extract_feature_from_field(input_field, output_field))
+    # smb major version groups 3 has been left out
+    smb_versions = [1, 2]
+    # 1 is left out
+    amqp_versions = [0]
+    # rdp major versions, 10 is left out
+    rdp_versions = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+    if 'smb_version.major' in input_field:
+        lines.extend(utils.one_hot_encode(input_field, output_field, smb_versions, "encode_version_major", "is_"))
+        lines.extend(utils.generate_relating_lines(input_field, output_field[:-6], 'version_number', 'version'))
+
+    elif 'amqp.banner.version.major' in input_field:
+        lines.extend(utils.one_hot_encode(input_field, output_field, amqp_versions, "encode_version_major", "is_"))
+        lines.extend(utils.generate_relating_lines(input_field, output_field[:-6], 'version_number', 'version'))
+
+    elif 'rdp.banner.version.major' in input_field:
+        lines.extend(utils.one_hot_encode(input_field, output_field, rdp_versions, "encode_version_major", "is_"))
+        lines.extend(utils.generate_relating_lines(input_field, output_field[:-6], 'version_number', 'version'))
+
+    elif 'bacnet.device_id.vendor.id' in input_field:
+        lines.extend(utils.generate_check_lines(input_field, output_field, 'is_ashrae', 'is_ashrae'))
+
+    return lines
+
+
+def encode_http_fields(input_field, output_field):
+    lines = []
+    status_code_strs = ['success', 'redirection', 'client_error', 'server_error']
+    # same one_hot_encode function was used but  functionality is different
+    session_time_ranges = ["minutes", "hours", "days"]
+
+    if 'session_ticket.lifetime_hint' in input_field:
+        lines.extend(utils.one_hot_encode(input_field, output_field, session_time_ranges, "encode_validity_length", "in_"))
+
+    elif 'status_code' in input_field:
+        lines.extend(utils.one_hot_encode(input_field, output_field, status_code_strs, "encode_status_code", "is_"))
+
+    return lines
+
+
+def transform_common_fields(input_field, output_field):
+    lines = []
+    lines.extend(encode_certificate_fields(input_field, output_field))
+    lines.extend(encode_service_version_fields(input_field, output_field))
+    lines.extend(encode_http_fields(input_field, output_field))
+    return lines
+
+
+def generate_numeric_lines(input_field, output_field, field_data=None):
+    lines = []
+    lines.extend(transform_common_fields(input_field, output_field))
     if input_field[0] == 'p':
-        lines.extend(extract_feature_from_field(input_field[1:], output_field[1:]))
+        lines.extend(transform_common_fields(input_field[1:], output_field[1:]))
     lines.extend(utils.handle_general_case(input_field=input_field,
                                            output_field=output_field,
                                            line_generator=utils.generate_numeric_line))

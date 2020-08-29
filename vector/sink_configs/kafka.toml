@@ -1,0 +1,13 @@
+[sinks.out]
+    inputs = ["lua"]
+    type = "kafka"
+
+    # General
+    bootstrap_servers = "10.14.22.123:9092,10.14.23.332:9092" # required
+    compression = "none" # optional, default
+    healthcheck = true # optional, default
+    key_field = "user_id" # required
+    topic = "topic-1234" # required
+
+    # Encoding
+    encoding.codec = "text" # optional, default

@@ -51,6 +51,11 @@ def write_script_to_file(file_name, function_name, data_lines):
         _file.write(data)
 
 
+def get_json_data(filepath):
+    with open(filepath, 'r') as f:
+        return json.load(f)
+
+
 def main():
     print([g for g in get_config()])
 

@@ -1,5 +1,5 @@
 [sources.socket_unix]
-  type = "socket"
-  path = "${ADDRESS}" 
-  max_length = 102400
-  mode = "unix"
+    type = "socket"
+    path = './file.sock'
+    max_length = 102400
+    mode = "unix"

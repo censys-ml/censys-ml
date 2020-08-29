@@ -1,16 +1,16 @@
-
 [transforms.parser]
-  inputs = ["${SOURCE_TYPE}"]
-  type   = "json_parser"
-  field  = "message"
-  drop_invalid = true
+    inputs = ["${INPUT}"]
+    type   = "json_parser"
+    field  = "message"
+    drop_invalid = false
 
 [transforms.lua]
-  inputs = ["parser"]
-  type="lua"
-  search_dirs = ['../scripts/lua', '../scripts/static']
-  source= '''
-require("date_utils")
+    inputs = ["parser"]
+    type="lua"
+    search_dirs = ['../scripts/lua', '../scripts/static']
+    source= '''
+--print("Running lua transforms...")
+require("time_utils")
 require("general_utils")
 require("numeric_utils")
 require("variables")
@@ -24,9 +24,3 @@ handle_numeric(event)
 handle_time(event)
 remove_input_fields(event)
 '''
-
-[sinks.out]
-  inputs = ["lua"] 
-  type = "${OUTPUT}"
-  encoding.codec = "ndjson"
-  path = "${OUT_FILE}"

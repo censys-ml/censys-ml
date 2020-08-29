@@ -1,0 +1,26 @@
+[sinks.out]
+    inputs = ["lua"]
+    type = "http"
+
+    # General
+    uri = "https://10.22.212.22:9000/endpoint" # required
+    compression = "none" # optional, default
+    healthcheck = true # optional, default
+
+    # Batch
+    batch.max_bytes = 1049000 # optional, default, bytes
+    batch.max_events = 1000 # optional, no default, events
+    batch.timeout_secs = 1 # optional, default, seconds
+
+    # Buffer
+    buffer.max_events = 500 # optional, default, events, relevant when type = "memory"
+    buffer.type = "memory" # optional, default
+
+    # Encoding
+    encoding.codec = "json" # required
+
+    # Request
+    request.in_flight_limit = 10 # optional, default, requests
+    request.rate_limit_duration_secs = 1 # optional, default, seconds
+    request.rate_limit_num = 1000 # optional, default
+    request.timeout_secs = 30 # optional, default, seconds

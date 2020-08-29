@@ -1,0 +1,7 @@
+[sinks.out]
+    inputs = ["lua"]
+    type = "elasticsearch"
+    compression = "none" # optional, default
+    healthcheck = true # optional, default
+    host = "http://127.0.0.1:9200" # optional, no default
+    index = "vector-%F" # optional, default

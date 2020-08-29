@@ -1,0 +1,9 @@
+[sinks.out]
+    inputs = ["lua"]
+    type = "file"
+    path = "${OUT_FILE}" # required
+    # Encoding
+    encoding.codec = "ndjson" # required
+    healthcheck = true # optional, default
+
+
