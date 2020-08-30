@@ -101,6 +101,12 @@ function remove_input_fields(event)
 	event["6443"] = nil
 	event["p9090"] = nil
 	event["9090"] = nil
+	event["p161"] = nil
+	event["161"] = nil
+	event["p11211"] = nil
+	event["11211"] = nil
+	event["p6379"] = nil
+	event["6379"] = nil
 	event["ports"] = nil
 	event["orts"] = nil
 	event["tags"] = nil

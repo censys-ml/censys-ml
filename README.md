@@ -1,12 +1,14 @@
 # Censys-ML (Beta)
 
+[![Build Status](https://travis-ci.org/censys-ml/censys-ml.svg?branch=master)](https://travis-ci.org/censys-ml/censys-ml)
+
+![alt text](./logo.png "Censys-ML Logo")
+
 Current release: 0.0.2
 
 License: [MIT](https://choosealicense.com/licenses/mit/)
 
 Censys-ML is a data mapping tool that transforms the [Censys](https://censys.io) data model and other similar sources into one more suited for data analysis.
-
-![alt text](./img.png "Censys-ML Logo")
 
 ## Installation
 
