@@ -1,0 +1,17 @@
+[sinks.out]
+    inputs = ["lua"]
+    type = "splunk_hec"
+
+    # General
+    host = "http://my-splunk-host.com" # required
+    host_key = "hostname" # optional, no default
+
+    healthcheck = true # optional, default
+    indexed_fields = ["field1", "field2"] # optional, no default, relevant when encoding = "json"
+    token = "${SPLUNK_HEC_TOKEN}" # required
+
+    # Encoding
+    encoding.codec = "text" # optional, default
+
+    # Requests
+    compression = "none" # optional, default

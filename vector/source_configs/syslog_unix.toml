@@ -1,0 +1,5 @@
+[sources.syslog_unix]
+    type = "syslog"
+    path = "${ADDRESS}"
+    max_length = 102400
+    mode = "unix"

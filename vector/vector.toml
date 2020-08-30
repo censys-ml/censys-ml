@@ -1,47 +1,26 @@
-data_dir = "/Users/dagmawi/Desktop/censys-ml/vector/data"
+[transforms.parser]
+    inputs = ["${INPUT}"]
+    type   = "json_parser"
+    field  = "message"
+    drop_invalid = false
 
-[sources.in]
-    type = "${INPUT}"
-
-[transforms.numeric]
-    search_dirs = ["./scripts/lua"]
-    inputs = ["in"]
-    type = "lua"
-    source = """
+[transforms.lua]
+    inputs = ["parser"]
+    type="lua"
+    search_dirs = ['../scripts/lua', '../scripts/static']
+    source= '''
+--print("Running lua transforms...")
+require("time_utils")
+require("general_utils")
+require("numeric_utils")
+require("variables")
+require("string_field")
 require("numeric_field")
+require("time_field")
+require("remove_input_fields")
+
+handle_string(event)
 handle_numeric(event)
-    """
-
-# [transforms.numeric]
-#     type = "lua"
-#     search_dirs = ["./scripts/lua"]
-#     inputs = ["in"]
-#     source = """
-# require("numeric_field")
-# require("string_field")
-# require("time_field")
-
-# print("Running...")
-
-# add_numeric(event)
-#     """
-
-# [transforms.numeric]
-#     type = "lua"
-#     search_dirs = ["./scripts/lua"]
-#     inputs = ["in"]
-#     source = """
-# require("numeric_field")
-# require("string_field")
-# require("time_field")
-
-# print("Running...")
-
-# add_numeric(event)
-#     """
-
-[sinks.out]
-    inputs = ["numeric"]
-    type = "${OUTPUT}"
-    encoding = "ndjson"
-    path = "/Users/dagmawi/Desktop/censys-ml/vector/data/vector-%Y-%m-%d.json"
+handle_time(event)
+remove_input_fields(event)
+'''

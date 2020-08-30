@@ -1,0 +1,5 @@
+[sources.socket_udp]
+    type = "socket"
+    address = "0.0.0.0:9000"
+    max_length = 102400
+    mode = "udp"

@@ -1,0 +1,4 @@
+[sinks.out]
+    inputs = ["lua"]
+    type = "console"
+    encoding.codec = "json"

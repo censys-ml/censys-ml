@@ -54,6 +54,10 @@ coverage.xml
 *.cover
 .hypothesis/
 .pytest_cache/
+tests/__pycache__
+tests/test_vector/input/*
+tests/test_vector/output/*
+tests/test_vector/data/*
 
 # Translations
 *.mo
@@ -91,6 +95,7 @@ celerybeat-schedule
 
 # Environments
 .env
+.idea/
 .venv
 env/
 venv/
@@ -113,5 +118,4 @@ venv.bak/
 ./legacy/*
 legacy/*
 config/auth/*
-scripts/lua/*
-
+coverage

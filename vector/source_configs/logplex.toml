@@ -1,0 +1,11 @@
+[sources.logplex]
+    type = "logplex"
+    address = "0.0.0.0:80"
+
+#    # TLS
+#    tls.enabled = ${ENABLE_TLS}
+#    tls.ca_path = "${CA_PATH}"
+#    tls.crt_path = "${CERT_PATH}"
+#    tls.key_pass = "${KEY_PASS}"
+#    tls.key_path = "${KEY_PATH}"
+#    tls.verify_certificate = ${VERIFY_CERT}
