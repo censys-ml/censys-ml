@@ -62,7 +62,7 @@ export INPUT="file"     <-- input configuration
 export OUTPUT="console" <-- output configuration
 ```
 
-There are additional [sinks](https://vector.dev/docs/reference/sinks/) and [sources](https://vector.dev/docs/reference/sources/) in beta on the Vector website.
+There are additional [sinks](https://vector.dev/docs/reference/sinks/) and [sources](https://vector.dev/docs/reference/sources/) in beta on the Vector website that might have not been included here.
 
 Additional configuration changes might need to be made in the **source_configs** (./vector/source_configs/) and **sink_configs** (./vector/sink_configs/) directories based on other source/sink specific requirements. E.g., topics for kafka, indices for elasticsearch, etc.
 
