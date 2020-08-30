@@ -4,14 +4,6 @@ from google.cloud import bigquery
 
 from censys_ml import utils
 
-CENSYS_API_KEY_FILEPATH = utils.get_config()['censys']['report_key']
-CENSYS_API_KEY = utils.get_json_data(filepath=CENSYS_API_KEY_FILEPATH)
-censys_api = censys.ipv4.CensysIPv4(**CENSYS_API_KEY)
-
-REPORT_WHITELIST = {
-    'country_code'
-}
-
 
 def data_from_json_file(path):
     with open(path, 'r') as in_file:
@@ -110,11 +102,20 @@ def parse_schema(fields):
 #     else:
 #         pass
 
-
 report_cache = {}
+censys_api = None
+REPORT_WHITELIST = {
+    'country_code'
+}
 
+def setup_censys_api():
+    if censys_api == None:
+        CENSYS_API_KEY_FILEPATH = utils.get_config()['censys']['report_key']
+        CENSYS_API_KEY = utils.get_json_data(filepath=CENSYS_API_KEY_FILEPATH)
+        censys_api = censys.ipv4.CensysIPv4(**CENSYS_API_KEY)
 
 def grab_top_string_values(field, n_values=20):
+    setup_censys_api()
     report_args = {
         "query": "",
         "field": field,
